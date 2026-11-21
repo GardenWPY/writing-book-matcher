@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>写作指路图书馆 · 选一个入口</title>
+<style>
+  :root{
+    --bg:#12100d; --card:#1c1913; --card-primary:#241f16;
+    --gold:#d4a853; --gold2:#b8893a; --text:#ece5d5; --muted:#a79e89; --line:#3a3226;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--text);
+    background:radial-gradient(120% 90% at 50% 0%,#1d1912 0%,var(--bg) 60%);
+    min-height:100vh; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:clamp(28px,6vw,64px) 20px 56px}
+
+  /* 页头 */
+  header{text-align:center;margin-bottom:clamp(28px,5vw,52px)}
+  header .crest{font-size:38px;line-height:1;margin-bottom:10px}
+  header h1{font-size:clamp(24px,4vw,34px);margin:0 0 10px;letter-spacing:.14em;font-weight:600;color:var(--gold)}
+  header p{margin:0;color:var(--muted);font-size:clamp(13px,2.2vw,15px);letter-spacing:.04em}
+
+  /* 桌面：非对称三栏，左右为 1fr，中间精简版 1.4fr */
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1.4fr 1fr;
+    gap:clamp(14px,2vw,24px);
+    align-items:center;
+  }
+
+  .card{
+    display:flex; flex-direction:column;
+    text-decoration:none; color:inherit;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:clamp(20px,2.4vw,30px);
+    min-height:380px;
+    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease;
+    will-change:transform;
+  }
+  /* 左右次卡垂直居中由 grid align-items 完成；主推默认更高更大 */
+  .card.primary{
+    background:var(--card-primary);
+    border:2px solid var(--gold);
+    min-height:500px;
+    box-shadow:0 10px 40px rgba(212,168,83,.10);
+  }
+  .card.primary .badge{display:inline-block}
+
+  .badge{
+    display:none; align-self:flex-start;
+    font-size:11px; letter-spacing:.12em; color:#1a1408;
+    background:var(--gold); border-radius:999px; padding:3px 12px; margin-bottom:12px;
+  }
+  .card h2{
+    font-size:clamp(19px,2.4vw,23px); margin:0 0 6px; font-weight:600; letter-spacing:.06em;
+  }
+  .card.primary h2{font-size:clamp(22px,3vw,28px); color:var(--gold)}
+  .tagline{margin:0 0 18px; color:var(--muted); font-size:13.5px; min-height:42px}
+
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:14px 0}
+  .stat{text-align:center}
+  .stat b{display:block; font-size:clamp(17px,2.2vw,21px); color:var(--gold); font-weight:600; line-height:1.2}
+  .card.primary .stat b{font-size:clamp(19px,2.6vw,24px)}
+  .stat span{display:block; font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:.03em}
+
+  .audience{margin:0 0 22px; font-size:13px; color:var(--text); opacity:.9}
+  .audience em{font-style:normal; color:var(--gold2); margin-right:6px}
+
+  .btn{
+    margin-top:auto; display:block; text-align:center;
+    font-size:14px; letter-spacing:.08em; padding:11px 16px; border-radius:10px;
+  }
+  .btn.primary{background:var(--gold); color:#1a1408; font-weight:600; border:1px solid var(--gold)}
+  .btn.secondary{background:transparent; color:var(--gold); border:1px solid var(--gold2)}
+
+  /* 桌面顺序：左 全量 / 中 精简 / 右 专项（DOM 顺序为精简-全量-专项，Tab 首选主推） */
+  .card.primary{order:2}
+  .card.full{order:1}
+  .card.special{order:3}
+
+  /* hover / focus 增强：仅左右次卡上浮 + 放大；焦点环三卡皆备 */
+  @media (hover:hover) and (pointer:fine){
+    .card.full:hover,.card.special:hover{
+      transform:translateY(-3px) scale(1.03);
+      border-color:var(--gold2);
+      box-shadow:0 12px 34px rgba(0,0,0,.4);
+    }
+  }
+  .card.full:focus-visible,.card.special:focus-visible{
+    transform:translateY(-3px) scale(1.03);
+    border-color:var(--gold2);
+    box-shadow:0 12px 34px rgba(0,0,0,.4);
+  }
+  .card:focus-visible{outline:3px solid var(--gold); outline-offset:4px}
+
+  /* 移动端 / 触屏：纵向堆叠，精简版占满宽度置顶，次卡更矮；不做 hover 放大，:active 0.97 */
+  @media (max-width:760px){
+    .wrap{padding-top:34px}
+    .grid{grid-template-columns:1fr; gap:14px; align-items:stretch}
+    .card.primary,.card.full,.card.special{order:0}
+    .card{min-height:0; padding:22px}
+    .card.primary{width:100%; min-height:0}
+    .tagline{min-height:0}
+    .card.full:hover,.card.special:hover,
+    .card.full:focus-visible,.card.special:focus-visible{transform:none; box-shadow:none}
+    .card:active{transform:scale(.97); transition:transform .08s ease}
+  }
+
+  /* 尊重减少动态偏好：关闭所有过渡与位移缩放 */
+  @media (prefers-reduced-motion:reduce){
+    .card{transition:none !important}
+    .card.full:hover,.card.special:hover,
+    .card.full:focus-visible,.card.special:focus-visible,
+    .card:active{transform:none !important; box-shadow:none !important}
+  }
+
+  footer{text-align:center; color:var(--muted); font-size:12px; margin-top:clamp(28px,5vw,46px); opacity:.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="crest" aria-hidden="true">🚪</div>
+    <h1>写作指路图书馆</h1>
+    <p>三条路，三种打开方式。选出你今晚该翻开的那一本。</p>
+  </header>
+
+  <main class="grid">
+
+    <!-- DOM 第一位：主推精简版（桌面视觉中间） -->
+    <a class="card primary"
+       href="写作工具书匹配测试_精简版.html"
+       aria-label="精简版，全量版的轻量替代。64 个结局，40 本核心书，约 6 到 8 分钟。适合想知道今晚最该看哪本书的人。点击进入精简版。">
+      <span class="badge">推荐 · 从这里开始</span>
+      <h2>精简版</h2>
+      <p class="tagline">不给你一堆书单让你焦虑，只给你现在最该翻开的那一本。</p>
+      <div class="stats">
+        <div class="stat"><b>64</b><span>个结局</span></div>
+        <div class="stat"><b>40</b><span>本核心书</span></div>
+        <div class="stat"><b>6–8</b><span>分钟 · 5 题</span></div>
+      </div>
+      <p class="audience"><em>适合</em>想快速锁定该读哪本、不愿被长书单淹没的人。</p>
+      <span class="btn primary">进入精简版 →</span>
+    </a>
+
+    <!-- 全量版（桌面视觉左） -->
+    <a class="card full"
+       href="写作工具书匹配测试_v2.html"
+       aria-label="全量版，通用写作工具书匹配。64 个结局，300 本书，约 6 到 8 分钟。适合想在全品类里广泛比对、需要相关推荐的深度用户。点击进入全量版。">
+      <h2>全量版</h2>
+      <p class="tagline">通用写作工具书匹配，5 题覆盖全品类。</p>
+      <div class="stats">
+        <div class="stat"><b>64</b><span>个结局</span></div>
+        <div class="stat"><b>300</b><span>本书</span></div>
+        <div class="stat"><b>6–8</b><span>分钟 · 5 题</span></div>
+      </div>
+      <p class="audience"><em>适合</em>想在全品类里广泛比对、并查看 6 本相关推荐的深度用户。</p>
+      <span class="btn secondary">进入全量版 →</span>
+    </a>
+
+    <!-- 专项版（桌面视觉右） -->
+    <a class="card special"
+       href="故事写作专项版_匹配测试.html"
+       aria-label="专项版，故事写作专项。80 条路径，81 本书，约 3 到 5 分钟。适合已确定写故事、想按卡点精准找方法的人。点击进入专项版。">
+      <h2>专项版</h2>
+      <p class="tagline">故事写作专项，4 层聚焦「写什么 / 卡在哪 / 要什么方法」。</p>
+      <div class="stats">
+        <div class="stat"><b>80</b><span>条路径</span></div>
+        <div class="stat"><b>81</b><span>本书</span></div>
+        <div class="stat"><b>3–5</b><span>分钟 · 4 层</span></div>
+      </div>
+      <p class="audience"><em>适合</em>已确定要写故事、想按卡点精准找方法的人。</p>
+      <span class="btn secondary">进入专项版 →</span>
+    </a>
+
+  </main>
+
+  <footer>三版均为单文件页面，可离线双击打开 · 数据已冻结 · 写作指路图书馆</footer>
+</div>
+</body>
+</html>

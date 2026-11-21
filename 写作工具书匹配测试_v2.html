@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>写作指路图书馆</title>
+<style>
+  :root{
+    --bg1:#2b2118; --bg2:#14100c;
+    --panel:rgba(32,25,18,.86); --panel2:rgba(48,38,27,.7);
+    --line:rgba(212,168,83,.32); --line2:rgba(212,168,83,.16);
+    --gold:#d4a853; --gold2:#b8893a;
+    --ink:#e8dcc0; --ink2:#c9b48a; --ink3:#9b8a6e;
+    --green:#8fae7a; --red:#c87a6a;
+    --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    font-family:var(--serif);
+    background:radial-gradient(ellipse 120% 80% at 50% -10%,var(--bg1),var(--bg2) 70%);
+    background-attachment:fixed;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  #app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;padding:0 0 env(safe-area-inset-bottom)}
+  header.top{padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .lamp{font-size:22px;filter:drop-shadow(0 0 8px rgba(212,168,83,.6));animation:flick 4s ease-in-out infinite}
+  @keyframes flick{0%,100%{opacity:1}45%{opacity:.75}55%{opacity:.95}}
+  .brand{font-size:14px;letter-spacing:.14em;color:var(--ink2)}
+  .brand small{display:block;font-size:10px;letter-spacing:.2em;color:var(--ink3);margin-top:2px}
+  .dots{margin-left:auto;display:flex;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(212,168,83,.22);transition:.4s}
+  .dot.on{background:var(--gold);box-shadow:0 0 8px rgba(212,168,83,.7)}
+  .dot.done{background:var(--gold2)}
+  main{flex:1;display:flex;flex-direction:column;padding:8px 20px 24px;position:relative;z-index:1}
+
+  .scene{font-size:30px;text-align:center;margin:6px 0 2px;line-height:1;letter-spacing:.1em}
+  .narrator{font-size:13.5px;line-height:1.9;color:var(--ink3);font-style:italic;text-align:center;margin:6px 4px 14px}
+  .speak{position:relative;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:12px 14px 12px 40px;font-size:13.5px;line-height:1.8;color:var(--ink2);margin:0 0 18px}
+  .speak:before{content:"导";position:absolute;left:11px;top:12px;width:22px;height:22px;border:1px solid var(--line);border-radius:50%;font-size:11px;color:var(--gold);display:flex;align-items:center;justify-content:center}
+  .act{font-size:11px;letter-spacing:.25em;color:var(--gold);text-align:center;margin-bottom:8px}
+  h1.q{font-size:19px;line-height:1.6;text-align:center;margin:4px 0 20px;font-weight:600;color:var(--ink)}
+
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{display:flex;align-items:center;gap:13px;min-height:60px;padding:12px 13px;background:var(--panel);border:1px solid var(--line);border-radius:13px;cursor:pointer;transition:transform .18s,border-color .18s,background .18s;text-align:left;color:var(--ink);font-family:inherit;width:100%}
+  .opt:active{transform:scale(.98)}
+  .opt:hover{border-color:var(--gold);background:rgba(212,168,83,.08)}
+  .opt .ico{width:42px;height:42px;flex-shrink:0;border-radius:11px;background:linear-gradient(145deg,rgba(212,168,83,.18),rgba(212,168,83,.04));border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:21px}
+  .opt .body{flex:1;min-width:0}
+  .opt .lb{font-size:14px;font-weight:600;color:var(--gold);margin-bottom:3px}
+  .opt .tx{font-size:12.5px;line-height:1.6;color:var(--ink2)}
+  .opt .sk{font-size:10.5px;color:var(--ink3);margin-top:4px}
+  .opt.sel{border-color:var(--gold);background:rgba(212,168,83,.15);box-shadow:0 0 0 1px var(--gold),0 8px 24px rgba(0,0,0,.3)}
+
+  .btn{display:block;width:100%;min-height:52px;margin-top:22px;border:none;border-radius:13px;background:linear-gradient(145deg,var(--gold),var(--gold2));color:#1c150d;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:transform .18s,filter .18s}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--gold);font-weight:500}
+  .prev-btn{margin-top:9px;min-height:42px;font-size:13px}
+  .hint{font-size:11px;color:var(--ink3);text-align:center;margin-top:12px;line-height:1.7}
+
+  /* 结局 */
+  .res-head{text-align:center;padding:10px 0 4px}
+  .res-tag{font-size:10px;letter-spacing:.3em;color:var(--gold);border:1px solid var(--line);border-radius:20px;padding:4px 12px;display:inline-block;margin-bottom:12px}
+  h1.res-title{font-size:25px;line-height:1.4;margin:0 0 14px;color:var(--ink);letter-spacing:.03em}
+  .guide{font-size:15px;line-height:1.9;color:var(--gold);font-style:italic;padding:14px 16px;border-left:2px solid var(--gold);background:var(--panel2);border-radius:0 10px 10px 0;margin-bottom:6px}
+  .sec-t{font-size:11px;letter-spacing:.28em;color:var(--ink3);margin:24px 0 12px;display:flex;align-items:center;gap:10px}
+  .sec-t:after{content:"";flex:1;height:1px;background:var(--line2)}
+
+  .book{display:flex;gap:13px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:13px;margin-bottom:11px;opacity:0;transform:translateY(18px)}
+  .book.in{animation:bookIn .7s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes bookIn{to{opacity:1;transform:none}}
+  /* 主攻：更大、更深、更亮，凸显为今晚第一本 */
+  .book.main{padding:18px 16px;background:linear-gradient(135deg,rgba(212,168,83,.16),rgba(212,168,83,.04));border-color:var(--gold2);box-shadow:0 0 0 1px rgba(212,168,83,.28),0 8px 22px rgba(0,0,0,.32)}
+  .book.main .cover{width:60px;height:82px;font-size:26px}
+  .book.main .bname{font-size:17px}
+  .book.main .match .num{font-size:31px}
+  .book.main .role{background:var(--gold);color:#241a10;border-color:var(--gold);font-weight:700}
+  .book .cover{width:50px;height:68px;flex-shrink:0;border-radius:4px 8px 8px 4px;background:linear-gradient(135deg,#7a5a34,#3d2c1a);border:1px solid var(--gold2);box-shadow:inset 3px 0 6px rgba(0,0,0,.4),3px 3px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative}
+  .book .cover:before{content:"";position:absolute;left:4px;top:0;bottom:0;width:1px;background:rgba(255,255,255,.12)}
+  .book .bi{flex:1;min-width:0}
+  .role{display:inline-block;font-size:9.5px;letter-spacing:.1em;padding:2px 8px;border-radius:10px;background:rgba(212,168,83,.15);color:var(--gold);border:1px solid var(--line2);margin-bottom:5px}
+  .role.bz{background:rgba(143,174,122,.14);color:var(--green);border-color:rgba(143,174,122,.3)}
+  .role.kz{background:rgba(200,122,106,.14);color:var(--red);border-color:rgba(200,122,106,.3)}
+  .bname{font-size:15px;font-weight:600;line-height:1.4;margin-bottom:2px}
+  .bmeta{font-size:10.5px;color:var(--ink3);margin-bottom:5px;line-height:1.4}
+  .bauthor{display:inline-block;font-size:11px;font-weight:400;color:var(--gold);margin-left:6px;white-space:nowrap}
+  .bpitch{font-size:12px;line-height:1.65;color:var(--ink3)}
+  .match{margin-left:auto;flex-shrink:0;text-align:center;align-self:center}
+  .match .num{font-size:26px;font-weight:700;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+  .match .pct{font-size:10px;color:var(--ink3);margin-top:2px}
+
+  .rec{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border-bottom:1px solid var(--line2)}
+  .rec:last-child{border-bottom:none}
+  .rec .rn{width:22px;height:22px;flex-shrink:0;border-radius:6px;background:rgba(212,168,83,.12);border:1px solid var(--line2);color:var(--gold);font-size:11px;display:flex;align-items:center;justify-content:center}
+  .rec .rb{flex:1;min-width:0}
+  .rec .rname{font-size:13.5px;font-weight:600;color:var(--ink)}
+  .rec .rrole{font-size:9.5px;color:var(--gold);margin-left:7px;font-weight:400}
+  .rec .rtext{font-size:11.5px;line-height:1.7;color:var(--ink3);margin-top:3px}
+  .rec-list{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:4px 12px;opacity:0;transform:translateY(14px);max-height:15px;overflow:hidden;transition:max-height .55s cubic-bezier(.2,.8,.2,1)}
+  .rec-list.in{animation:bookIn .6s ease forwards}
+  .rec-list:not(.open){-webkit-mask-image:linear-gradient(#000 12%,transparent);mask-image:linear-gradient(#000 12%,transparent)}
+  .rec-list.open{max-height:3000px}
+  .rec-more{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;min-height:46px;padding:7px 0 2px;margin-top:2px;background:none;border:none;color:var(--gold);font-family:var(--serif);cursor:pointer;opacity:0;transition:opacity .5s ease}
+  .rec-more.in{opacity:1}
+  .rec-more .tri{font-size:15px;line-height:1;animation:bob 1.9s ease-in-out infinite}
+  .rec-more .more-tx{font-size:10px;letter-spacing:.14em;color:var(--ink3)}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+  .rec-more.open .tri{transform:rotate(180deg);animation:none}
+
+  /* 过渡层 */
+  .trans{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at center,#241b13,#0c0907);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s}
+  .trans.on{opacity:1;pointer-events:all}
+  .page{width:150px;height:200px;border-radius:6px;background:linear-gradient(135deg,#e8dcc0,#c9b48a);box-shadow:0 20px 50px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:#3a2a18;font-size:40px;transform-origin:left center;position:relative}
+  .page:after{content:"";position:absolute;inset:10px;border:1px solid rgba(90,64,34,.2);border-radius:3px;pointer-events:none}
+  .trans.on .page{animation:flip 2s cubic-bezier(.5,.05,.3,1) forwards}
+  @keyframes flip{0%{transform:perspective(600px) rotateY(0) translateX(0);opacity:0}
+    25%{transform:perspective(600px) rotateY(-10deg) translateX(0);opacity:1}
+    75%{transform:perspective(600px) rotateY(-30deg) translateX(-10px);opacity:1}
+    100%{transform:perspective(600px) rotateY(-75deg) translateX(-40px);opacity:.15}}
+  .trans .tt{color:var(--ink2);font-size:14px;letter-spacing:.15em;margin-top:26px;text-align:center;line-height:1.9;padding:0 30px}
+  .loader{width:34px;height:34px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 18px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  footer.ft{flex-shrink:0;padding:10px 20px 18px;text-align:center}
+  .replay{display:none;width:100%;min-height:50px;border:1px solid var(--gold);border-radius:12px;background:transparent;color:var(--gold);font-family:inherit;font-size:14px;letter-spacing:.12em;cursor:pointer}
+  .replay.show{display:block}
+  .replay:active{background:rgba(212,168,83,.1)}
+
+  @media (max-height:680px){
+    .scene{font-size:24px;margin:2px 0}
+    .narrator{margin:4px 4px 10px;font-size:12.5px}
+    .speak{margin-bottom:12px;padding:10px 12px 10px 38px}
+    h1.q{font-size:17px;margin:2px 0 14px}
+    .opt{min-height:54px;padding:10px 12px}
+    .opt .ico{width:38px;height:38px;font-size:19px}
+    .btn{margin-top:14px}
+  }
+  /* ===== 结局页反馈：折叠区下方、页脚上方 ===== */
+  .fdb{margin-top:26px;padding:18px 16px;border:1px solid var(--line2);border-radius:14px;background:var(--panel2);text-align:left}
+  .fdb-title{font-size:14px;color:var(--gold);letter-spacing:.06em;margin-bottom:8px}
+  .fdb-hint{font-size:11.5px;color:var(--ink3);margin:6px 0 10px}
+  .fdb-stars{display:flex;flex-wrap:wrap;gap:6px}
+  .fdb-star{position:relative;cursor:pointer}
+  .fdb-star input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .fdb-star span{display:block;padding:6px 7px;border:1px solid var(--line2);border-radius:8px;color:var(--ink3);font-size:15px;letter-spacing:1px}
+  .fdb-star input:checked+span{color:var(--gold);border-color:var(--gold);background:rgba(212,168,83,.12)}
+  .fdb-star input:focus-visible+span{outline:2px solid var(--gold);outline-offset:2px}
+  .fdb-textarea,.fdb-input{width:100%;margin-top:10px;padding:10px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);color:var(--ink);font-family:inherit;font-size:13px;box-sizing:border-box}
+  .fdb-textarea{resize:vertical;min-height:64px}
+  .fdb-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .fdb-tag{padding:5px 9px;border:1px solid var(--line2);border-radius:999px;background:none;color:var(--ink2);font-family:inherit;font-size:11.5px;cursor:pointer}
+  .fdb-btn{width:100%;min-height:46px;margin-top:12px;border:1px solid var(--gold);border-radius:10px;background:var(--gold);color:#1a1408;font-family:inherit;font-size:13.5px;letter-spacing:.1em;cursor:pointer}
+  .fdb-btn:disabled{opacity:.45;cursor:not-allowed}
+  .fdb-msg{min-height:18px;margin-top:8px;text-align:center;font-size:12px;color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="lamp">🕯️</div>
+    <div class="brand">写作指路图书馆<small>THE WRITER'S CROSSROADS</small></div>
+    <div class="dots" id="dots"></div>
+  </header>
+  <main id="stage"></main>
+  <footer class="ft"><button class="replay" id="replay">↺ 重新走一条路</button><a href="index.html" style="display:block;margin-top:12px;color:var(--gold);font-family:inherit;font-size:13px;letter-spacing:.1em;text-decoration:none;opacity:.85">← 返回选择版本</a></footer>
+</div>
+<div class="trans" id="trans"><div class="page">📖</div><div class="tt" id="transTxt"></div></div>
+
+<script>
+/* ===== 结局页反馈：CloudBase 接收端在联调时填入 HTTP 访问服务地址 ===== */
+const FEEDBACK_ENDPOINT = "https://write-and-read-d8g1608td872c7963-1538285430.ap-shanghai.app.tcloudbase.com/api/feedback";
+const FEEDBACK_VERSION = "全量版";
+function feedbackHtml(endingId){
+  return `
+    <section class="fdb" aria-label="结果反馈">
+      <div class="fdb-title">这次推荐，对你有用吗？</div>
+      <div class="fdb-hint">给这次结果打个分</div>
+      <div class="fdb-stars" role="radiogroup" aria-label="1 到 5 分评分">
+        ${[1,2,3,4,5].map(n=>`<label class="fdb-star"><input type="radio" name="fdbScore" value="${n}" aria-label="${n} 分"><span>${"★".repeat(n)}</span></label>`).join("")}
+      </div>
+      <textarea class="fdb-textarea" id="fdbText" rows="3" maxlength="500" placeholder="给这次荐书结果的评价（选填）"></textarea>
+      <textarea class="fdb-textarea" id="fdbWant" rows="3" maxlength="120" placeholder="你还希望有什么写作相关小工具？（选填）"></textarea>
+      <button type="button" class="fdb-btn" id="fdbSubmit" disabled>提交反馈</button>
+      <div class="fdb-msg" id="fdbMsg" role="status" aria-live="polite"></div>
+      <input type="hidden" id="fdbEnding" value="${endingId}">
+      <input type="hidden" id="fdbVersion" value="${FEEDBACK_VERSION}">
+    </section>`;
+}
+function initFeedback(){
+  const box=document.querySelector(".fdb"); if(!box) return;
+  const btn=document.getElementById("fdbSubmit"), msg=document.getElementById("fdbMsg");
+  box.querySelectorAll('input[name="fdbScore"]').forEach(r=>r.addEventListener("change",()=>{btn.disabled=false;msg.textContent=""}));
+  box.querySelectorAll(".fdb-tag").forEach(t=>t.addEventListener("click",()=>{
+    const inp=document.getElementById("fdbWant");
+    inp.value=(inp.value?inp.value.replace(/[、,，]\s*$/,"")+"、":"")+t.dataset.tag;
+    inp.focus();
+  }));
+  btn.addEventListener("click",async()=>{
+    const score=box.querySelector('input[name="fdbScore"]:checked');
+    if(!score){msg.textContent="请先选择 1 到 5 分。";return}
+    if(!FEEDBACK_ENDPOINT){msg.textContent="接收端尚未配置，暂不能提交。";return}
+    const payload={rating:Number(score.value),text:document.getElementById("fdbText").value.trim(),wish:document.getElementById("fdbWant").value.trim(),endingId:document.getElementById("fdbEnding").value,version:document.getElementById("fdbVersion").value};
+    try{
+      const res=await fetch(FEEDBACK_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      if(!res.ok) throw new Error(String(res.status));
+      msg.textContent="收到了，谢谢。";
+    }catch(e){msg.textContent="提交失败，请稍后再试。";}
+  });
+}
+/* =====================================================================
+   数据区 —— 全部数据与文案集中在此，与下方页面逻辑分离，方便后续替换
+   当前版本：v2-full（64 结局 + 40 核心书 + 260 扩展书，含作者区分展示）
+   ===================================================================== */
+const DATA = {
+  version:"v2-full（64结局 + 40核心书 + 260扩展书）",
+  meta:{
+    title:"写作指路图书馆",
+    subtitle:" five questions, one bookshelf",
+    opening:[
+      "你推开一扇旧木门，进入一座光线昏黄的图书馆。",
+      "书架高到看不见顶，桌上摊着一本没写完的稿纸、一张地图、一把钥匙和一份工作证。",
+      "一位管理员从书架后探出头，把一盏小灯推到你面前。",
+      "“写作的路很多，但今晚你只能先走一条。”",
+      "“先告诉我——你此刻最想带走什么？”"
+    ],
+    toResult:"你走到桌前，桌上放着三本书。管理员的声音从书架后传来：“这不是终点。这只是你今晚该翻开的第一页。”"
+  },
+  questions:[
+    {
+      act:"第一幕 · 你为什么来", icon:"📄",
+      speak:"管理员把四样东西往你面前推了推：“选一个。别贪心，贪心的人走不出这间屋子。”",
+      title:"如果今晚只能先解决一件事，你会选哪一样？",
+      options:[
+        {code:"A",label:"完成作品",text:"我想写完一个故事，或者把手头这个作品推到完稿。",ico:"📄",sk:"意象：一张写了一半的稿纸"},
+        {code:"B",label:"提升体系",text:"我想让自己写得更稳、更有方法，不再靠碰运气。",ico:"📚",sk:"意象：一座分类清晰的书架"},
+        {code:"C",label:"解决障碍",text:"我被卡住了——拖延、卡文、不敢下笔，或者改不动。",ico:"🧱",sk:"意象：一堵挡住去路的墙"},
+        {code:"D",label:"职业输出",text:"我需要在工作里写出东西：文案、公文、论文、剧本。",ico:"📋",sk:"意象：一份待交的报告"}
+      ]
+    },
+    {
+      act:"第二幕 · 文体确认", icon:"✒️", kind:"tone",
+      narr:"管理员收起你选中的东西，又问了一句：“方向我明白了。但你具体想写的是哪一种？”",
+      title:"你最近最想动笔的，更接近哪一种？",
+      options:[
+        {code:"novel",label:"小说 / 故事",text:"短篇、长篇、网文，或者一个虚构的世界。",ico:"📕"},
+        {code:"nonfiction",label:"非虚构 / 纪实",text:"真实的人、真实的事，特稿、回忆录、随笔。",ico:"📰"},
+        {code:"pro",label:"职业文本",text:"文案、公文、论文、报告，写出来是要交差的。",ico:"💼"},
+        {code:"undecided",label:"还没定",text:"剧本、诗歌、散文，或者‘我还没想好’，先看看。",ico:"🌫️"}
+      ]
+    },
+    {
+      act:"第三幕 · 你想怎么被带进去", icon:"🗺️",
+      narr:"管理员点点头，转身从书架上抽出四张卡片，一字排开。",
+      speak:"管理员说：“有人要地图，有人要样品，有人要跑道，有人要一盏灯。你要哪个？”",
+      title:"你希望这本书怎么带你进入写作？",
+      options:[
+        {code:"1",label:"框架步骤",text:"给我框架和步骤——大纲、模板、结构表，让我知道先做什么后做什么。",ico:"📊",sk:"意象：一张流程图"},
+        {code:"2",label:"范例拆解",text:"给我范例和拆解——看别人怎么写，拆明白了再自己动。",ico:"📖",sk:"意象：一摞拆解过的范文"},
+        {code:"3",label:"练习任务",text:"给我练习和任务——别讲太多，让我边写边练，写完再改。",ico:"📓",sk:"意象：一本翻开的练习册"},
+        {code:"4",label:"陪伴自由书写",text:"给我陪伴和自由书写——先让我敢写、写得下去，别一上来就评判。",ico:"🕯️",sk:"意象：一盏暖灯和一杯茶"}
+      ]
+    },
+    {
+      act:"第四幕 · 你打算怎么用这本书", icon:"⏳",
+      narr:"管理员把卡片收走，指了指墙上的钟，又指了指你口袋。",
+      speak:"管理员点点头：“路是你自己选的。现在，去桌上看看，哪三本书在等你。”",
+      title:"你真实的时间、精力和阅读习惯，更接近哪一种？",
+      options:[
+        {code:"1",label:"轻量速查",text:"每天15分钟，轻量速查——随手翻、马上用，不啃大部头。",ico:"⏳",sk:"意象：口袋里的15分钟沙漏"},
+        {code:"2",label:"系统学习",text:"周末集中，系统学习——我愿意花整块时间，把一套方法从头到尾学一遍。",ico:"📅",sk:"意象：周末的整块时间"},
+        {code:"3",label:"练习册工作本",text:"需要练习册/工作本——光看没用，我要边做边写，最好有任务和空白页。",ico:"✏️",sk:"意象：一支铅笔和一本工作本"},
+        {code:"4",label:"理论深读",text:"愿意读理论/案例，建立长期体系——我不怕慢，我想知道为什么。",ico:"👓",sk:"意象：一副眼镜和一摞理论书"}
+      ]
+    },
+    {
+      act:"第五幕 · 卡点确认", icon:"🔑", kind:"block",
+      speak:"管理员终于打开牛皮纸，里面是三本书的轮廓。“最后一问。你翻开书的那一刻，最可能被什么挡住？”",
+      title:"如果今晚就翻开其中一本，你最担心发生什么？",
+      options:[
+        {code:"noTime",label:"没时间 / 读不完",text:"翻两页就困，或者根本没整块时间。",ico:"⏳"},
+        {code:"notUseful",label:"看懂但用不上",text:"道理都懂，合上书还是不知道怎么下笔。",ico:"🤷"},
+        {code:"stuck",label:"写着写着就卡住",text:"能开始，但中途会卡文，卡结构、卡人物。",ico:"🧱"},
+        {code:"afraid",label:"怕写得烂，不敢开始",text:"完美主义，或者一写就自我怀疑。",ico:"🫥"},
+        {code:"skip",label:"跳过",text:"我现在没有具体卡点，直接看结果。",ico:"➡️"}
+      ]
+    }
+  ],
+
+  /* 结局总表（当前 3 条，key 为结局ID） */
+  endings:{
+    "A-1-1":{
+      id:"A-1-1", path:"完成 / 框架 / 轻量", title:"先搭骨架再动笔的人",
+      genre:"小说", guide:"你缺的不是灵感，是一张能走完的路线图。",
+      tags:["小说","初稿","框架"],
+      books:[{role:"主攻",id:"C08",base:92},{role:"补短",id:"C11",base:86},{role:"扩展",id:"E44",base:78}]
+    },
+    "A-1-2":{
+      id:"A-1-2", path:"完成 / 框架 / 系统", title:"结构工程师型作者",
+      genre:"小说", guide:"你要的不是技巧碎片，是一套能复用的故事工程。",
+      tags:["小说","结构","体系"],
+      books:[{role:"主攻",id:"C07",base:93},{role:"补短",id:"C06",base:85},{role:"扩展",id:"E44",base:76}]
+    },
+    "A-1-3":{
+      id:"A-1-3", path:"完成 / 框架 / 练习册", title:"大纲工作本使用者",
+      genre:"小说", guide:"先把脚手架搭稳，写起来才不会塌。",
+      tags:["小说","大纲","练习"],
+      books:[{role:"主攻",id:"C11",base:91},{role:"补短",id:"C08",base:84},{role:"扩展",id:"E22",base:77}]
+    },
+    "A-1-4":{
+      id:"A-1-4", path:"完成 / 框架 / 理论", title:"故事原理深读者",
+      genre:"小说", guide:"你想知道故事为什么成立，而不只是怎么写。",
+      tags:["小说","理论","经典"],
+      books:[{role:"主攻",id:"C06",base:94},{role:"补短",id:"C07",base:83},{role:"扩展",id:"E238",base:75}]
+    },
+    "A-2-1":{
+      id:"A-2-1", path:"完成 / 范例 / 轻量", title:"从好小说里偷师的人",
+      genre:"小说", guide:"看懂别人怎么赢，比闷头写十稿更快。",
+      tags:["小说","审美","拆解"],
+      books:[{role:"主攻",id:"C09",base:90},{role:"补短",id:"C08",base:82},{role:"扩展",id:"E55",base:74}]
+    },
+    "A-2-2":{
+      id:"A-2-2", path:"完成 / 范例 / 系统", title:"非虚构叙事观察者",
+      genre:"非虚构", guide:"你要写真实的人，先学会看真实的结构。",
+      tags:["非虚构","体系","案例"],
+      books:[{role:"主攻",id:"C14",base:92},{role:"补短",id:"C13",base:86},{role:"扩展",id:"E93",base:78}]
+    },
+    "A-2-3":{
+      id:"A-2-3", path:"完成 / 范例 / 练习册", title:"场景与人物练习生",
+      genre:"非虚构", guide:"叙事非虚构的功夫，在场景里见真章。",
+      tags:["非虚构","场景","练习"],
+      books:[{role:"主攻",id:"C13",base:89},{role:"补短",id:"C14",base:84},{role:"扩展",id:"E103",base:76}]
+    },
+    "A-2-4":{
+      id:"A-2-4", path:"完成 / 范例 / 理论", title:"一线方法研读者",
+      genre:"非虚构", guide:"大师怎么工作，比教程更像被手把手带。",
+      tags:["非虚构","访谈","方法"],
+      books:[{role:"主攻",id:"C15",base:91},{role:"补短",id:"C14",base:83},{role:"扩展",id:"E101",base:74}]
+    },
+    "A-3-1":{
+      id:"A-3-1", path:"完成 / 练习 / 轻量", title:"30天完稿冲刺者",
+      genre:"小说", guide:"别再准备了，先让初稿存在。",
+      tags:["小说","冲刺","习惯"],
+      books:[{role:"主攻",id:"C12",base:93},{role:"补短",id:"C30",base:85},{role:"扩展",id:"E22",base:77}]
+    },
+    "A-3-2":{
+      id:"A-3-2", path:"完成 / 练习 / 系统", title:"冲突驱动型写作者",
+      genre:"小说", guide:"故事没劲，多半是冲突没上桌。",
+      tags:["小说","冲突","系统"],
+      books:[{role:"主攻",id:"C10",base:91},{role:"补短",id:"C08",base:84},{role:"扩展",id:"E44",base:75}]
+    },
+    "A-3-3":{
+      id:"A-3-3", path:"完成 / 练习 / 练习册", title:"每日一页小说工",
+      genre:"小说", guide:"每天一页，比等一个大灵感可靠。",
+      tags:["小说","练习","完稿"],
+      books:[{role:"主攻",id:"C12",base:88},{role:"补短",id:"C11",base:82},{role:"扩展",id:"E22",base:74}]
+    },
+    "A-3-4":{
+      id:"A-3-4", path:"完成 / 练习 / 理论", title:"边写边拆的故事学徒",
+      genre:"小说", guide:"写一段，拆一段，进步才看得见。",
+      tags:["小说","练习","理论"],
+      books:[{role:"主攻",id:"C07",base:89},{role:"补短",id:"C10",base:83},{role:"扩展",id:"E238",base:73}]
+    },
+    "A-4-1":{
+      id:"A-4-1", path:"完成 / 陪伴 / 轻量", title:"一只鸟接着一只鸟的人",
+      genre:"小说", guide:"别想整本书，先写今天这一只鸟。",
+      tags:["小说","拖延","陪伴"],
+      books:[{role:"主攻",id:"C30",base:94},{role:"补短",id:"C28",base:86},{role:"扩展",id:"E38",base:78}]
+    },
+    "A-4-2":{
+      id:"A-4-2", path:"完成 / 陪伴 / 系统", title:"习惯型长跑作者",
+      genre:"小说", guide:"写作不是等状态，是训练状态。",
+      tags:["小说","习惯","系统"],
+      books:[{role:"主攻",id:"C29",base:90},{role:"补短",id:"C30",base:84},{role:"扩展",id:"E44",base:76}]
+    },
+    "A-4-3":{
+      id:"A-4-3", path:"完成 / 陪伴 / 练习册", title:"自由书写初稿人",
+      genre:"小说", guide:"先允许自己写得很烂，初稿才出得来。",
+      tags:["小说","自由书写","练习"],
+      books:[{role:"主攻",id:"C28",base:92},{role:"补短",id:"C29",base:83},{role:"扩展",id:"E20",base:75}]
+    },
+    "A-4-4":{
+      id:"A-4-4", path:"完成 / 陪伴 / 理论", title:"表达性写作疗愈者",
+      genre:"心理", guide:"先把情绪写出去，故事才进得来。",
+      tags:["心理","疗愈","理论"],
+      books:[{role:"主攻",id:"C34",base:89},{role:"补短",id:"C30",base:82},{role:"扩展",id:"E19",base:73}]
+    },
+    "B-1-1":{
+      id:"B-1-1", path:"体系 / 框架 / 轻量", title:"结论先行表达者",
+      genre:"通用", guide:"先把结论放上去，论据才知道往哪排。",
+      tags:["通用","逻辑","轻量"],
+      books:[{role:"主攻",id:"C03",base:92},{role:"补短",id:"C38",base:85},{role:"扩展",id:"E01",base:77}]
+    },
+    "B-1-2":{
+      id:"B-1-2", path:"体系 / 框架 / 系统", title:"清晰写作体系搭建者",
+      genre:"非虚构", guide:"清晰不是天赋，是可以练的结构。",
+      tags:["通用","清晰","体系"],
+      books:[{role:"主攻",id:"C02",base:93},{role:"补短",id:"C03",base:84},{role:"扩展",id:"E08",base:76}]
+    },
+    "B-1-3":{
+      id:"B-1-3", path:"体系 / 框架 / 练习册", title:"卡片笔记实践者",
+      genre:"通用", guide:"素材会自己长出文章，前提是你先攒卡片。",
+      tags:["通用","素材","练习"],
+      books:[{role:"主攻",id:"C04",base:91},{role:"补短",id:"C33",base:83},{role:"扩展",id:"E06",base:75}]
+    },
+    "B-1-4":{
+      id:"B-1-4", path:"体系 / 框架 / 理论", title:"认知风格研究者",
+      genre:"通用", guide:"写作的敌人不是没词，是读者脑中的歧义。",
+      tags:["通用","风格","理论"],
+      books:[{role:"主攻",id:"C01",base:90},{role:"补短",id:"C02",base:82},{role:"扩展",id:"E239",base:74}]
+    },
+    "B-2-1":{
+      id:"B-2-1", path:"体系 / 范例 / 轻量", title:"中文语感启蒙者",
+      genre:"中文", guide:"把语感当手艺练，中文才会听话。",
+      tags:["中文","语感","轻量"],
+      books:[{role:"主攻",id:"C05",base:92},{role:"补短",id:"C01",base:84},{role:"扩展",id:"E230",base:76}]
+    },
+    "B-2-2":{
+      id:"B-2-2", path:"体系 / 范例 / 系统", title:"写作手艺研习者",
+      genre:"通用", guide:"写作是门手艺，手艺要靠拆解和重复。",
+      tags:["通用","体系","范例"],
+      books:[{role:"主攻",id:"C33",base:89},{role:"补短",id:"C05",base:83},{role:"扩展",id:"E230",base:75}]
+    },
+    "B-2-3":{
+      id:"B-2-3", path:"体系 / 范例 / 练习册", title:"范文拆解练习生",
+      genre:"中文", guide:"拆十篇好文章，胜过空想十个开头。",
+      tags:["中文","范例","练习"],
+      books:[{role:"主攻",id:"C05",base:88},{role:"补短",id:"C09",base:82},{role:"扩展",id:"E06",base:74}]
+    },
+    "B-2-4":{
+      id:"B-2-4", path:"体系 / 范例 / 理论", title:"叙事理论深读者",
+      genre:"小说", guide:"理论不是装点，是让你看懂范例的骨架。",
+      tags:["小说","理论","范例"],
+      books:[{role:"主攻",id:"C06",base:91},{role:"补短",id:"C09",base:83},{role:"扩展",id:"E55",base:73}]
+    },
+    "B-3-1":{
+      id:"B-3-1", path:"体系 / 练习 / 轻量", title:"职场逻辑写作者",
+      genre:"职场", guide:"商务写作先讲逻辑，再讲措辞。",
+      tags:["职场","逻辑","轻量"],
+      books:[{role:"主攻",id:"C38",base:90},{role:"补短",id:"C03",base:84},{role:"扩展",id:"E36",base:76}]
+    },
+    "B-3-2":{
+      id:"B-3-2", path:"体系 / 练习 / 系统", title:"结构化输出者",
+      genre:"通用", guide:"结构练熟了，写什么都快。",
+      tags:["通用","结构","练习"],
+      books:[{role:"主攻",id:"C03",base:89},{role:"补短",id:"C04",base:82},{role:"扩展",id:"E06",base:75}]
+    },
+    "B-3-3":{
+      id:"B-3-3", path:"体系 / 练习 / 练习册", title:"写作工作本使用者",
+      genre:"通用", guide:"方法不落成练习，就只是知识。",
+      tags:["通用","练习","工作本"],
+      books:[{role:"主攻",id:"C33",base:87},{role:"补短",id:"C04",base:81},{role:"扩展",id:"E03",base:74}]
+    },
+    "B-3-4":{
+      id:"B-3-4", path:"体系 / 练习 / 理论", title:"研究型写作者",
+      genre:"学术", guide:"研究不是找资料，是提出能被回答的问题。",
+      tags:["学术","论证","理论"],
+      books:[{role:"主攻",id:"C20",base:91},{role:"补短",id:"C33",base:83},{role:"扩展",id:"E139",base:73}]
+    },
+    "B-4-1":{
+      id:"B-4-1", path:"体系 / 陪伴 / 轻量", title:"写作习惯养成者",
+      genre:"心理", guide:"写作不是等状态，是训练状态。",
+      tags:["心理","习惯","轻量"],
+      books:[{role:"主攻",id:"C29",base:90},{role:"补短",id:"C30",base:83},{role:"扩展",id:"E15",base:76}]
+    },
+    "B-4-2":{
+      id:"B-4-2", path:"体系 / 陪伴 / 系统", title:"长期主义写作者",
+      genre:"心理", guide:"长期写作靠的不是意志，是低门槛的重复。",
+      tags:["心理","拖延","系统"],
+      books:[{role:"主攻",id:"C30",base:89},{role:"补短",id:"C29",base:82},{role:"扩展",id:"E20",base:75}]
+    },
+    "B-4-3":{
+      id:"B-4-3", path:"体系 / 陪伴 / 练习册", title:"表达性书写练习者",
+      genre:"心理", guide:"写出来，情绪才有地方去。",
+      tags:["心理","疗愈","练习"],
+      books:[{role:"主攻",id:"C34",base:88},{role:"补短",id:"C28",base:81},{role:"扩展",id:"E20",base:74}]
+    },
+    "B-4-4":{
+      id:"B-4-4", path:"体系 / 陪伴 / 理论", title:"英文风格修炼者",
+      genre:"英文", guide:"英文写作的第一课：删掉多余的词。",
+      tags:["英文","风格","理论"],
+      books:[{role:"主攻",id:"C31",base:90},{role:"补短",id:"C35",base:83},{role:"扩展",id:"E04",base:73}]
+    },
+    "C-1-1":{
+      id:"C-1-1", path:"障碍 / 框架 / 轻量", title:"大纲卡点突破者",
+      genre:"小说", guide:"卡文不是没灵感，是路线图断了。",
+      tags:["小说","大纲","障碍"],
+      books:[{role:"主攻",id:"C11",base:92},{role:"补短",id:"C10",base:85},{role:"扩展",id:"E46",base:77}]
+    },
+    "C-1-2":{
+      id:"C-1-2", path:"障碍 / 框架 / 系统", title:"冲突诊断者",
+      genre:"小说", guide:"故事没劲，先查冲突有没有上桌。",
+      tags:["小说","冲突","诊断"],
+      books:[{role:"主攻",id:"C10",base:91},{role:"补短",id:"C07",base:84},{role:"扩展",id:"E46",base:76}]
+    },
+    "C-1-3":{
+      id:"C-1-3", path:"障碍 / 框架 / 练习册", title:"拖延完稿冲刺者",
+      genre:"小说", guide:"完稿不是才华问题，是日程问题。",
+      tags:["小说","完稿","练习"],
+      books:[{role:"主攻",id:"C12",base:90},{role:"补短",id:"C30",base:83},{role:"扩展",id:"E45",base:75}]
+    },
+    "C-1-4":{
+      id:"C-1-4", path:"障碍 / 框架 / 理论", title:"结构复盘型作者",
+      genre:"小说", guide:"改不动，往往是因为结构没被看清。",
+      tags:["小说","结构","复盘"],
+      books:[{role:"主攻",id:"C07",base:88},{role:"补短",id:"C06",base:82},{role:"扩展",id:"E55",base:74}]
+    },
+    "C-2-1":{
+      id:"C-2-1", path:"障碍 / 范例 / 轻量", title:"不敢下笔的解冻者",
+      genre:"心理", guide:"先写烂，再写好；先存在，再完美。",
+      tags:["心理","不敢写","轻量"],
+      books:[{role:"主攻",id:"C30",base:93},{role:"补短",id:"C28",base:86},{role:"扩展",id:"E19",base:78}]
+    },
+    "C-2-2":{
+      id:"C-2-2", path:"障碍 / 范例 / 系统", title:"剧本体检者",
+      genre:"编剧", guide:"剧本改不动时，做一次无情体检。",
+      tags:["编剧","修改","诊断"],
+      books:[{role:"主攻",id:"C40",base:89},{role:"补短",id:"C25",base:83},{role:"扩展",id:"E196",base:75}]
+    },
+    "C-2-3":{
+      id:"C-2-3", path:"障碍 / 范例 / 练习册", title:"自由书写脱困者",
+      genre:"心理", guide:"写着写着，卡点会自己露出来。",
+      tags:["心理","自由书写","练习"],
+      books:[{role:"主攻",id:"C28",base:90},{role:"补短",id:"C34",base:82},{role:"扩展",id:"E24",base:74}]
+    },
+    "C-2-4":{
+      id:"C-2-4", path:"障碍 / 范例 / 理论", title:"习惯重建型作者",
+      genre:"心理", guide:"写不下去，先修写作习惯，不修句子。",
+      tags:["心理","习惯","理论"],
+      books:[{role:"主攻",id:"C29",base:88},{role:"补短",id:"C30",base:81},{role:"扩展",id:"E19",base:73}]
+    },
+    "C-3-1":{
+      id:"C-3-1", path:"障碍 / 练习 / 轻量", title:"每日一页重启者",
+      genre:"心理", guide:"今天只写一页，别想整本书。",
+      tags:["心理","拖延","练习"],
+      books:[{role:"主攻",id:"C30",base:91},{role:"补短",id:"C12",base:84},{role:"扩展",id:"E20",base:76}]
+    },
+    "C-3-2":{
+      id:"C-3-2", path:"障碍 / 练习 / 系统", title:"张力训练者",
+      genre:"小说", guide:"冲突练熟了，卡文会少一半。",
+      tags:["小说","张力","练习"],
+      books:[{role:"主攻",id:"C10",base:89},{role:"补短",id:"C08",base:83},{role:"扩展",id:"E22",base:75}]
+    },
+    "C-3-3":{
+      id:"C-3-3", path:"障碍 / 练习 / 练习册", title:"自由书写工作本使用者",
+      genre:"心理", guide:"把自由书写变成日常，卡点就不再是墙。",
+      tags:["心理","自由书写","工作本"],
+      books:[{role:"主攻",id:"C28",base:88},{role:"补短",id:"C34",base:82},{role:"扩展",id:"E38",base:74}]
+    },
+    "C-3-4":{
+      id:"C-3-4", path:"障碍 / 练习 / 理论", title:"表达性写作修复者",
+      genre:"心理", guide:"先处理情绪，再处理文字。",
+      tags:["心理","疗愈","修复"],
+      books:[{role:"主攻",id:"C34",base:87},{role:"补短",id:"C28",base:81},{role:"扩展",id:"E19",base:73}]
+    },
+    "C-4-1":{
+      id:"C-4-1", path:"障碍 / 陪伴 / 轻量", title:"完美主义松绑者",
+      genre:"心理", guide:"允许自己写烂，是完稿的第一步。",
+      tags:["心理","完美主义","陪伴"],
+      books:[{role:"主攻",id:"C30",base:94},{role:"补短",id:"C29",base:86},{role:"扩展",id:"E38",base:78}]
+    },
+    "C-4-2":{
+      id:"C-4-2", path:"障碍 / 陪伴 / 系统", title:"写作习惯陪跑者",
+      genre:"心理", guide:"写作靠陪伴和重复，不靠爆发。",
+      tags:["心理","习惯","陪跑"],
+      books:[{role:"主攻",id:"C29",base:90},{role:"补短",id:"C30",base:84},{role:"扩展",id:"E24",base:76}]
+    },
+    "C-4-3":{
+      id:"C-4-3", path:"障碍 / 陪伴 / 练习册", title:"自由书写陪练者",
+      genre:"心理", guide:"有人陪着写，墙会矮一点。",
+      tags:["心理","自由书写","陪练"],
+      books:[{role:"主攻",id:"C28",base:89},{role:"补短",id:"C34",base:83},{role:"扩展",id:"E15",base:75}]
+    },
+    "C-4-4":{
+      id:"C-4-4", path:"障碍 / 陪伴 / 理论", title:"书写疗愈深读者",
+      genre:"心理", guide:"写出来，情绪才有地方去。",
+      tags:["心理","疗愈","深读"],
+      books:[{role:"主攻",id:"C34",base:88},{role:"补短",id:"C30",base:82},{role:"扩展",id:"E24",base:74}]
+    },
+    "D-1-1":{
+      id:"D-1-1", path:"职业 / 框架 / 轻量", title:"公文零基础入门者",
+      genre:"公文", guide:"公文第一关是规范，第二关才是文采。",
+      tags:["公文","规范","轻量"],
+      books:[{role:"主攻",id:"C23",base:92},{role:"补短",id:"C24",base:85},{role:"扩展",id:"E171",base:77}]
+    },
+    "D-1-2":{
+      id:"D-1-2", path:"职业 / 框架 / 系统", title:"笔杆子实战者",
+      genre:"公文", guide:"把“笔杆子”拆成可练的动作。",
+      tags:["公文","实战","体系"],
+      books:[{role:"主攻",id:"C24",base:93},{role:"补短",id:"C23",base:84},{role:"扩展",id:"E174",base:76}]
+    },
+    "D-1-3":{
+      id:"D-1-3", path:"职业 / 框架 / 练习册", title:"公文模板使用者",
+      genre:"公文", guide:"先套对模板，再谈个人风格。",
+      tags:["公文","模板","练习"],
+      books:[{role:"主攻",id:"C23",base:90},{role:"补短",id:"C24",base:83},{role:"扩展",id:"E188",base:75}]
+    },
+    "D-1-4":{
+      id:"D-1-4", path:"职业 / 框架 / 理论", title:"学术流程研究者",
+      genre:"学术", guide:"从选题到伦理，先看清全流程。",
+      tags:["学术","流程","理论"],
+      books:[{role:"主攻",id:"C39",base:89},{role:"补短",id:"C20",base:83},{role:"扩展",id:"E139",base:74}]
+    },
+    "D-2-1":{
+      id:"D-2-1", path:"职业 / 范例 / 轻量", title:"短文案转化者",
+      genre:"文案", guide:"把卖点翻译成用户想点的按钮。",
+      tags:["文案","转化","轻量"],
+      books:[{role:"主攻",id:"C18",base:91},{role:"补短",id:"C16",base:84},{role:"扩展",id:"E108",base:76}]
+    },
+    "D-2-2":{
+      id:"D-2-2", path:"职业 / 范例 / 系统", title:"文案基本功修炼者",
+      genre:"文案", guide:"文案的底层是说服，不是形容词。",
+      tags:["文案","基本功","系统"],
+      books:[{role:"主攻",id:"C16",base:92},{role:"补短",id:"C37",base:85},{role:"扩展",id:"E09",base:77}]
+    },
+    "D-2-3":{
+      id:"D-2-3", path:"职业 / 范例 / 练习册", title:"文案常识练习生",
+      genre:"文案", guide:"先别炫技，把文案常识练成直觉。",
+      tags:["文案","常识","练习"],
+      books:[{role:"主攻",id:"C37",base:89},{role:"补短",id:"C18",base:83},{role:"扩展",id:"E110",base:75}]
+    },
+    "D-2-4":{
+      id:"D-2-4", path:"职业 / 范例 / 理论", title:"广告心法研读者",
+      genre:"文案", guide:"好文案首先是好判断。",
+      tags:["文案","广告","理论"],
+      books:[{role:"主攻",id:"C17",base:90},{role:"补短",id:"C16",base:82},{role:"扩展",id:"E111",base:74}]
+    },
+    "D-3-1":{
+      id:"D-3-1", path:"职业 / 练习 / 轻量", title:"新媒体持续输出者",
+      genre:"新媒体", guide:"不是教你爆款，是教你能一直写。",
+      tags:["新媒体","持续","轻量"],
+      books:[{role:"主攻",id:"C19",base:91},{role:"补短",id:"C18",base:84},{role:"扩展",id:"E108",base:76}]
+    },
+    "D-3-2":{
+      id:"D-3-2", path:"职业 / 练习 / 系统", title:"文献综述写作者",
+      genre:"学术", guide:"综述不是清单，是把前人放进对话。",
+      tags:["学术","综述","系统"],
+      books:[{role:"主攻",id:"C22",base:90},{role:"补短",id:"C20",base:83},{role:"扩展",id:"E137",base:75}]
+    },
+    "D-3-3":{
+      id:"D-3-3", path:"职业 / 练习 / 练习册", title:"新媒体工作本使用者",
+      genre:"新媒体", guide:"持续产出靠流程，不靠灵感。",
+      tags:["新媒体","练习","工作本"],
+      books:[{role:"主攻",id:"C19",base:88},{role:"补短",id:"C38",base:82},{role:"扩展",id:"E106",base:74}]
+    },
+    "D-3-4":{
+      id:"D-3-4", path:"职业 / 练习 / 理论", title:"研究论证训练者",
+      genre:"学术", guide:"论证练熟了，论文才立得住。",
+      tags:["学术","论证","练习"],
+      books:[{role:"主攻",id:"C20",base:89},{role:"补短",id:"C22",base:82},{role:"扩展",id:"E144",base:73}]
+    },
+    "D-4-1":{
+      id:"D-4-1", path:"职业 / 陪伴 / 轻量", title:"剧本节拍入门者",
+      genre:"编剧", guide:"先知道第15页该发生什么。",
+      tags:["编剧","节拍","轻量"],
+      books:[{role:"主攻",id:"C26",base:90},{role:"补短",id:"C25",base:83},{role:"扩展",id:"E196",base:76}]
+    },
+    "D-4-2":{
+      id:"D-4-2", path:"职业 / 陪伴 / 系统", title:"三幕结构写作者",
+      genre:"编剧", guide:"三幕结构是剧本的通用语法。",
+      tags:["编剧","结构","系统"],
+      books:[{role:"主攻",id:"C25",base:91},{role:"补短",id:"C26",base:84},{role:"扩展",id:"E197",base:75}]
+    },
+    "D-4-3":{
+      id:"D-4-3", path:"职业 / 陪伴 / 练习册", title:"对白练习者",
+      genre:"编剧", guide:"对白不是把话说出来，是让潜台词干活。",
+      tags:["编剧","对话","练习"],
+      books:[{role:"主攻",id:"C27",base:89},{role:"补短",id:"C25",base:82},{role:"扩展",id:"E80",base:74}]
+    },
+    "D-4-4":{
+      id:"D-4-4", path:"职业 / 陪伴 / 理论", title:"商业剧本复盘者",
+      genre:"编剧", guide:"复盘节拍，比改台词更快见效。",
+      tags:["编剧","商业","复盘"],
+      books:[{role:"主攻",id:"C26",base:88},{role:"补短",id:"C27",base:81},{role:"扩展",id:"E199",base:73}]
+    },
+  },
+  /* 书库：40核心 + 260扩展 */
+  books:{
+    "C01":{name:"风格感觉",family:"通用/风格",level:4,pitch:"它不教套路，教你把句子写到读者脑子里不打架。",bridge:"句子与认知",emoji:"✍️",tags:["通用","风格"],author:"史蒂芬·平克",publisher:"机械工业出版社"},
+    "C02":{name:"写作法宝",family:"通用/非虚构",level:3,pitch:"非虚构写作的地基，清晰、简洁、有人味。",bridge:"非虚构清晰度",emoji:"✍️",tags:["通用","非虚构"],author:"威廉·津瑟",publisher:"中国人民大学出版社"},
+    "C03":{name:"金字塔原理",family:"通用/逻辑",level:3,pitch:"先把结论放上去，再让论据排队，逻辑就不再打结。",bridge:"结构化表达",emoji:"✍️",tags:["通用","逻辑"],author:"芭芭拉·明托",publisher:"南海出版公司"},
+    "C04":{name:"卡片笔记写作法",family:"通用/素材",level:2,pitch:"把“写不出来”拆成“先攒卡片”，素材会自己长出文章。",bridge:"素材管理",emoji:"✍️",tags:["通用","素材"],author:"申克·阿伦斯",publisher:"人民邮电出版社"},
+    "C05":{name:"文心",family:"中文/语感",level:2,pitch:"中文写作的启蒙课，把语感当手艺来练。",bridge:"中文语感",emoji:"📘",tags:["中文","语感"],author:"夏丏尊、叶圣陶",publisher:"生活·读书·新知三联书店"},
+    "C06":{name:"故事",family:"小说/总论",level:4,pitch:"故事不是流水账，是价值在冲突中翻转。",bridge:"故事结构理论",emoji:"📖",tags:["小说","总论"],author:"罗伯特·麦基",publisher:"天津人民出版社"},
+    "C07":{name:"故事写作大师班",family:"小说/类型",level:4,pitch:"22个步骤把故事从灵感推到可写的结构。",bridge:"类型结构",emoji:"📖",tags:["小说","类型"],author:"约翰·特鲁比",publisher:"湖南文艺出版社"},
+    "C08":{name:"这样写出好故事",family:"小说/实操",level:3,pitch:"LOCK系统让你第一次知道初稿该往哪走。",bridge:"初稿结构",emoji:"📖",tags:["小说","实操"],author:"詹姆斯·斯科特·贝尔（James Scott Bell）",publisher:"湖南文艺出版社"},
+    "C09":{name:"小说课",family:"小说/审美",level:3,pitch:"毕飞宇拆经典，教你看懂好小说“好在哪里”。",bridge:"小说审美",emoji:"📖",tags:["小说","审美"],author:"毕飞宇",publisher:"人民文学出版社"},
+    "C10":{name:"冲突与悬念",family:"小说/专项",level:3,pitch:"卡文多半不是没灵感，是冲突没上桌。",bridge:"冲突与张力",emoji:"📖",tags:["小说","专项"],author:"詹姆斯·斯科特·贝尔",publisher:"中国人民大学出版社"},
+    "C11":{name:"小说的骨架",family:"小说/结构",level:2,pitch:"先把大纲搭成脚手架，再往里灌血肉。",bridge:"大纲方法",emoji:"📖",tags:["小说","结构"],author:"凯蒂·维兰德（K.M. Weiland）",publisher:"江西人民出版社"},
+    "C12":{name:"30天写小说",family:"小说/冲刺",level:2,pitch:"用30天倒逼完稿，专治“永远在准备”。",bridge:"完稿冲刺",emoji:"📖",tags:["小说","冲刺"],author:"克里斯·巴蒂",publisher:"中国人民大学出版社"},
+    "C13":{name:"故事技巧",family:"非虚构/叙事",level:3,pitch:"叙事非虚构的施工图，场景、人物、结构一样不少。",bridge:"叙事非虚构",emoji:"📰",tags:["非虚构","叙事"],author:"杰克·哈特",publisher:"中国人民大学出版社"},
+    "C14":{name:"哈佛非虚构写作课",family:"非虚构/体系",level:3,pitch:"一线非虚构写作者的方法合集，案例即教材。",bridge:"非虚构体系",emoji:"📰",tags:["非虚构","体系"],author:"马克·克雷默、温迪·考尔 编",publisher:"中国文史出版社"},
+    "C15":{name:"巴黎评论·非虚构作家访谈",family:"非虚构/访谈",level:4,pitch:"看大师怎么工作，比看教程更像被手把手带。",bridge:"一线方法",emoji:"📰",tags:["非虚构","访谈"],author:"《巴黎评论》编辑部",publisher:"人民文学出版社"},
+    "C16":{name:"文案训练手册",family:"文案/入门",level:3,pitch:"文案的底层是说服，不是形容词堆砌。",bridge:"文案基本功",emoji:"💬",tags:["文案","入门"],author:"约瑟夫·休格曼",publisher:"中信出版社"},
+    "C17":{name:"一个广告人的自白",family:"文案/经典",level:2,pitch:"奥格威告诉你，好文案首先是好判断。",bridge:"广告心法",emoji:"💬",tags:["文案","经典"],author:"大卫·奥格威",publisher:"中信出版社"},
+    "C18":{name:"爆款文案",family:"新媒体/转化",level:2,pitch:"把卖点翻译成用户想点的那个按钮。",bridge:"转化文案",emoji:"📘",tags:["新媒体","转化"],author:"关健明",publisher:"北京联合出版公司"},
+    "C19":{name:"学会写作",family:"新媒体/持续",level:2,pitch:"不是教你写爆款，是教你能一直写下去。",bridge:"持续产出",emoji:"📘",tags:["新媒体","持续"],author:"粥左罗",publisher:"人民邮电出版社"},
+    "C20":{name:"The Craft of Research",family:"学术/论证",level:4,pitch:"研究不是找资料，是提出一个能被回答的问题。",bridge:"研究设计",emoji:"🎓",tags:["学术","论证"],author:"韦恩·布斯 等",publisher:"新华出版社"},
+    "C21":{name:"芝加哥大学论文写作指南",family:"学术/规范",level:3,pitch:"格式不是束缚，是让论证被认真对待。",bridge:"学术规范",emoji:"🎓",tags:["学术","规范"],author:"凯特·图拉比安",publisher:"新华出版社"},
+    "C22":{name:"如何做好文献综述",family:"学术/综述",level:3,pitch:"综述不是文献清单，是把前人放进一场对话。",bridge:"文献综述",emoji:"🎓",tags:["学术","综述"],author:"阿琳·芬克",publisher:"重庆大学出版社"},
+    "C23":{name:"从零开始学公文写作",family:"公文/入门",level:2,pitch:"公文的第一关是规范，第二关才是文采。",bridge:"公文规范",emoji:"📄",tags:["公文","入门"],author:"王健平",publisher:"清华大学出版社"},
+    "C24":{name:"笔杆子是怎样炼成的",family:"公文/实战",level:3,pitch:"模板+实战，把“笔杆子”拆成可练的动作。",bridge:"公文实战",emoji:"📄",tags:["公文","实战"],author:"李永新",publisher:"清华大学出版社"},
+    "C25":{name:"电影剧本写作基础",family:"编剧/结构",level:3,pitch:"悉德·菲尔德的三幕结构，是剧本的通用语法。",bridge:"剧本结构",emoji:"🎬",tags:["编剧","结构"],author:"悉德·菲尔德",publisher:"世界图书出版公司"},
+    "C26":{name:"救猫咪",family:"编剧/商业",level:2,pitch:"节拍表让你知道第15页该发生什么。",bridge:"商业剧本节奏",emoji:"🎬",tags:["编剧","商业"],author:"布莱克·斯奈德",publisher:"浙江大学出版社"},
+    "C27":{name:"对白",family:"编剧/对话",level:4,pitch:"对白不是把话说出来，是让潜台词干活。",bridge:"对话与潜台词",emoji:"🎬",tags:["编剧","对话"],author:"罗伯特·麦基",publisher:"天津人民出版社"},
+    "C28":{name:"写出我心",family:"心理/自由书写",level:1,pitch:"先允许自己写得很烂，写作才真正开始。",bridge:"自由书写",emoji:"🕊️",tags:["心理","自由书写"],author:"娜塔莉·戈德堡",publisher:"广西科学技术出版社"},
+    "C29":{name:"成为作家",family:"心理/习惯",level:2,pitch:"用早晨写作和定时写作，训练你的写作潜意识。",bridge:"写作习惯",emoji:"🕊️",tags:["心理","习惯"],author:"多萝西娅·布兰德",publisher:"中国人民大学出版社"},
+    "C30":{name:"一只鸟接着一只鸟",family:"心理/拖延",level:1,pitch:"别想整本书，先写今天这一只鸟。",bridge:"拖延与完美主义",emoji:"🕊️",tags:["心理","拖延"],author:"安妮·拉莫特",publisher:"中信出版集团"},
+    "C31":{name:"The Elements of Style",family:"英文/风格",level:2,pitch:"英文写作的第一道门槛：删掉多余的词。",bridge:"英文清晰度",emoji:"🔤",tags:["英文","风格"],author:"小威廉·斯特伦克、E.B.怀特",publisher:"Pearson（Allyn & Bacon）"},
+    "C32":{name:"类型故事写作大师班",family:"类型/跨媒介",level:4,pitch:"14种类型各有自己的承诺，先认清你写的是哪一种。",bridge:"类型承诺",emoji:"📚",tags:["类型","跨媒介"],author:"约翰·特鲁比",publisher:"金城出版社"},
+    "C33":{name:"写作是门手艺",family:"通用/体系",level:3,pitch:"中文学术与实用写作之间，少有的可操作桥梁。",bridge:"写作体系",emoji:"✍️",tags:["通用","体系"],author:"刘军强",publisher:"广西师范大学出版社"},
+    "C34":{name:"写出来感觉好多了",family:"心理/疗愈",level:1,pitch:"表达性写作先处理情绪，再处理文字。",bridge:"情绪与疗愈",emoji:"🕊️",tags:["心理","疗愈"],author:"詹姆斯·彭内贝克",publisher:"机械工业出版社"},
+    "C35":{name:"Dreyer's English",family:"英文/用法",level:3,pitch:"当代英文用法指南，既权威又不端着。",bridge:"英文用法",emoji:"🔤",tags:["英文","用法"],author:"本杰明·德雷尔",publisher:"Random House"},
+    "C36":{name:"网络文学创作原理",family:"网文/类型",level:3,pitch:"网文的快感机制、世界设定与主角设计，一套讲透。",bridge:"网文机制",emoji:"📘",tags:["网文","类型"],author:"王祥",publisher:"中国人民大学出版社"},
+    "C37":{name:"文案的基本修养",family:"文案/常识",level:2,pitch:"中文文案圈的常识读本，先别急着炫技。",bridge:"文案判断力",emoji:"💬",tags:["文案","常识"],author:"东东枪",publisher:"中信出版集团"},
+    "C38":{name:"麦肯锡教我的写作武器",family:"职场/逻辑",level:2,pitch:"商务写作先讲逻辑，再讲措辞。",bridge:"商务逻辑",emoji:"📘",tags:["职场","逻辑"],author:"高杉尚孝",publisher:"广东旅游出版社"},
+    "C39":{name:"学术写作十讲",family:"学术/体系",level:3,pitch:"从选题到伦理，学术写作的全流程地图。",bridge:"学术流程",emoji:"🎓",tags:["学术","体系"],author:"卞冬磊",publisher:"北京大学出版社"},
+    "C40":{name:"你的剧本逊毙了",family:"编剧/诊断",level:3,pitch:"剧本改不动时，用它做一次无情体检。",bridge:"剧本修改",emoji:"🎬",tags:["编剧","诊断"],author:"威廉·M·埃克斯（William M. Akers）",publisher:"北京联合出版公司"},
+    "E01":{name:"写作这回事",family:"通用",level:2,pitch:"斯蒂芬·金的写作自传，先让你想动笔。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"斯蒂芬·金",publisher:"待确认"},
+    "E02":{name:"写出我心",family:"心理",level:1,pitch:"自由书写的经典入口。",bridge:"自由书写",emoji:"🕊️",tags:["心理","自由书写","不限"],author:"娜塔莉·戈德堡",publisher:"待确认",excluded:true},
+    "E03":{name:"完全写作指南",family:"通用",level:2,pitch:"200多个模板的百科式工具书。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E04":{name:"风格的要素（中英对照）",family:"英文",level:2,pitch:"英文写作最短的入口。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E05":{name:"写作工具",family:"通用",level:3,pitch:"55个可调用的写作策略。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E06":{name:"语法的魅力",family:"通用",level:3,pitch:"句子层面的风格训练。",bridge:"练习",emoji:"✍️",tags:["通用","练习","不限"],author:"待确认",publisher:"待确认"},
+    "E07":{name:"救命！写作者指南",family:"通用",level:2,pitch:"写作者的应急工具箱。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E08":{name:"如何写短文",family:"通用",level:2,pitch:"短表达的聚焦技术。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E09":{name:"文案基本功",family:"文案",level:2,pitch:"文案底层能力的系统梳理。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"苏芯",publisher:"待确认"},
+    "E10":{name:"写作是门手艺",family:"通用",level:3,pitch:"中文写作的可操作桥梁。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"刘军强",publisher:"待确认",excluded:true},
+    "E100":{name:"故事技巧",family:"非虚构",level:3,pitch:"叙事非虚构教程。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"杰克·哈特",publisher:"待确认",excluded:true},
+    "E101":{name:"非虚构写作（综合读本）",family:"非虚构",level:3,pitch:"非虚构类型综合。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E102":{name:"回忆录写作指南",family:"非虚构",level:2,pitch:"回忆录的方法。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E103":{name:"人人都应该拥有回忆录",family:"非虚构",level:2,pitch:"回忆录实操。",bridge:"练习",emoji:"📰",tags:["非虚构","练习"],author:"待确认",publisher:"待确认"},
+    "E104":{name:"你的回忆价值百万",family:"非虚构",level:2,pitch:"主观体验重现。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E105":{name:"记录生活",family:"非虚构",level:1,pitch:"日常写成散文与回忆录。",bridge:"自由书写",emoji:"📰",tags:["非虚构","自由书写"],author:"待确认",publisher:"待确认"},
+    "E106":{name:"文案创作完全手册",family:"文案",level:3,pitch:"文案百科。",bridge:"工具书",emoji:"💬",tags:["文案","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E107":{name:"奥格威谈广告",family:"文案",level:3,pitch:"广告写作的经典。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"大卫·奥格威",publisher:"待确认"},
+    "E108":{name:"广告人手记",family:"文案",level:3,pitch:"广告公司经营与创作。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E109":{name:"传神文案",family:"文案",level:3,pitch:"中文文案进阶。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E11":{name:"落花水面皆文章",family:"通用",level:2,pitch:"叶圣陶的读写方法。",bridge:"理论",emoji:"✍️",tags:["通用","理论","不限"],author:"叶圣陶",publisher:"待确认"},
+    "E110":{name:"高能文案写作课",family:"文案",level:2,pitch:"文案训练课。",bridge:"练习",emoji:"💬",tags:["文案","练习","职业文本"],author:"待确认",publisher:"待确认"},
+    "E111":{name:"尖叫感",family:"文案",level:2,pitch:"互联网文案的传播逻辑。",bridge:"理论",emoji:"💬",tags:["文案","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E112":{name:"李欣频的文案课",family:"文案",level:3,pitch:"中文文案代表作。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E113":{name:"文案基本功",family:"文案",level:2,pitch:"9大爆款技巧。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"苏芯",publisher:"待确认",excluded:true},
+    "E114":{name:"爆款写作课",family:"文案",level:2,pitch:"爆文黄金法则。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E115":{name:"好文案一句话就够了",family:"文案",level:1,pitch:"短句与卖点提炼。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"川上徹也",publisher:"待确认"},
+    "E116":{name:"高说服力的文案写作心法",family:"文案",level:3,pitch:"潜入顾客内心。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E117":{name:"文案大师教你精准劝败术",family:"文案",level:3,pitch:"定位到劝败。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E118":{name:"新媒体文案写作",family:"文案",level:2,pitch:"策划创意编辑传播。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E119":{name:"新媒体写作：从流量到IP",family:"文案",level:2,pitch:"流量到IP的路径。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E12":{name:"老舍谈写作与阅读",family:"通用",level:2,pitch:"语言大师的经验谈。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"老舍",publisher:"待确认"},
+    "E120":{name:"新媒体写作创富",family:"文案",level:2,pitch:"写作变现。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E121":{name:"自媒体写作从新手到高手",family:"文案",level:2,pitch:"AI+自媒体写作。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E122":{name:"高效AI文案写作",family:"文案",level:2,pitch:"AI辅助文案。",bridge:"工具书",emoji:"💬",tags:["文案","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E123":{name:"AIGC文案策划与写作",family:"文案",level:2,pitch:"AI文案策划。",bridge:"工具书",emoji:"💬",tags:["文案","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E124":{name:"新媒体广告策划与文案创意",family:"文案",level:3,pitch:"广告文案创意。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E125":{name:"爆款文案写作指南",family:"文案",level:2,pitch:"故事营销24课。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E126":{name:"如何讲好一个故事",family:"通用",level:2,pitch:"故事思维训练。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E127":{name:"高能带货文案",family:"文案",level:2,pitch:"25堂带货文案课。",bridge:"练习",emoji:"💬",tags:["文案","练习","职业文本"],author:"待确认",publisher:"待确认"},
+    "E128":{name:"文案成交高手",family:"文案",level:2,pitch:"以成交为终点。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E129":{name:"卖货文案与营销策略",family:"文案",level:3,pitch:"文案与策略配合。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E13":{name:"作文六要",family:"通用",level:2,pitch:"王鼎钧的写作六法。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"王鼎钧",publisher:"待确认"},
+    "E130":{name:"文案的基本修养",family:"文案",level:2,pitch:"中文文案常识。",bridge:"理论",emoji:"💬",tags:["文案","理论","职业文本"],author:"东东枪",publisher:"待确认",excluded:true},
+    "E131":{name:"麦肯锡教我的写作武器",family:"通用",level:2,pitch:"商务逻辑写作。",bridge:"框架",emoji:"✍️",tags:["通用","框架","职业文本"],author:"高杉尚孝",publisher:"待确认",excluded:true},
+    "E132":{name:"麦肯锡文案写作与沟通技巧",family:"文案",level:3,pitch:"商业文案逻辑。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E133":{name:"爆款写作",family:"文案",level:2,pitch:"100万+阅读指南。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E134":{name:"刷屏文案写作技巧",family:"文案",level:2,pitch:"刷屏传播逻辑。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E135":{name:"文案力",family:"文案",level:2,pitch:"一学就会的文案。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E136":{name:"The Chicago Manual of Style",family:"学术",level:4,pitch:"芝加哥格式原典。",bridge:"工具书",emoji:"🎓",tags:["学术","工具书","职业文本"],author:"芝加哥大学出版社",publisher:"待确认"},
+    "E137":{name:"Style: Toward Clarity and Grace",family:"学术",level:4,pitch:"学术文风句法指南。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"约瑟夫·威廉姆斯",publisher:"待确认"},
+    "E138":{name:"如何写好学术论文",family:"学术",level:3,pitch:"论文完全指南。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E139":{name:"研究是一门艺术",family:"学术",level:3,pitch:"研究思维与写作。",bridge:"理论",emoji:"🎓",tags:["学术","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E14":{name:"作文十九问",family:"通用",level:2,pitch:"问答体写作课。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E140":{name:"通识写作",family:"学术",level:2,pitch:"学术表达入门。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E141":{name:"如何写出好论文",family:"学术",level:3,pitch:"论文写作方法。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E142":{name:"学术论文写作与发表指引",family:"学术",level:3,pitch:"写作到发表。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E143":{name:"批判性思维与说服性写作",family:"学术",level:3,pitch:"论证与说服。",bridge:"理论",emoji:"🎓",tags:["学术","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E144":{name:"学术论文写作课",family:"学术",level:3,pitch:"论文写作教材。",bridge:"练习",emoji:"🎓",tags:["学术","练习","职业文本"],author:"待确认",publisher:"待确认"},
+    "E145":{name:"科技论文写作",family:"学术",level:3,pitch:"理工科论文规范。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E146":{name:"SCI论文写作与投稿",family:"学术",level:3,pitch:"SCI投稿路径。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E147":{name:"Writing for Social Scientists",family:"学术",level:4,pitch:"社科写作经典。",bridge:"理论",emoji:"🎓",tags:["学术","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E148":{name:"科研项目完全指南",family:"学术",level:3,pitch:"选题到报告。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E149":{name:"带一本书去读研",family:"学术",level:2,pitch:"研究生学术技能。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E15":{name:"灵感五讲",family:"心理",level:3,pitch:"四十年灵感手记。",bridge:"范例",emoji:"🕊️",tags:["心理","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E150":{name:"怎样顺利完成论文",family:"学术",level:3,pitch:"论文过程管理。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E151":{name:"研究生高分论文写作",family:"学术",level:3,pitch:"研究生论文专项。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E152":{name:"撰寫博碩士論文實戰手冊",family:"学术",level:3,pitch:"学位论文实操。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E153":{name:"如何做好文献综述",family:"学术",level:3,pitch:"综述独立方法。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"阿琳·芬克",publisher:"待确认",excluded:true},
+    "E154":{name:"会读才会写",family:"学术",level:2,pitch:"阅读到写作转化。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E155":{name:"如何撰写研究计划书",family:"学术",level:3,pitch:"研究提案写作。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E156":{name:"学习提问",family:"学术",level:2,pitch:"研究问题的提出。",bridge:"理论",emoji:"🎓",tags:["学术","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E157":{name:"构建社会科学理论",family:"学术",level:4,pitch:"社科理论写作。",bridge:"理论",emoji:"🎓",tags:["学术","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E158":{name:"学术祛魅",family:"学术",level:3,pitch:"实证研究十讲。",bridge:"范例",emoji:"🎓",tags:["学术","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E159":{name:"科研有办法",family:"学术",level:3,pitch:"方法写作与申报。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E16":{name:"谈写作",family:"通用",level:2,pitch:"朱光潜的写作观。",bridge:"理论",emoji:"✍️",tags:["通用","理论","不限"],author:"朱光潜",publisher:"待确认"},
+    "E160":{name:"案例研究的艺术",family:"学术",level:3,pitch:"案例方法与写作。",bridge:"范例",emoji:"🎓",tags:["学术","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E161":{name:"如何进行跨学科研究",family:"学术",level:3,pitch:"跨学科设计与写作。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E162":{name:"行动研究方法",family:"学术",level:3,pitch:"行动研究写作路径。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E163":{name:"期刊论文投稿解惑与写作建议",family:"学术",level:3,pitch:"投稿最后一公里。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E164":{name:"They Say / I Say",family:"学术",level:3,pitch:"学术对话性训练。",bridge:"练习",emoji:"🎓",tags:["学术","练习","职业文本"],author:"杰拉尔德·格拉夫、凯西·伯肯斯坦",publisher:"待确认"},
+    "E165":{name:"美国大学英语写作",family:"英文",level:3,pitch:"英文写作教材。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E166":{name:"英语写作手册",family:"英文",level:3,pitch:"英文写作规范。",bridge:"工具书",emoji:"🔤",tags:["英文","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E167":{name:"大学思辨英语教程·写作",family:"英文",level:3,pitch:"思辨写作。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E168":{name:"Academic Writing for Graduate Students",family:"学术",level:4,pitch:"研究生学术写作经典。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"斯韦尔斯、菲克",publisher:"待确认"},
+    "E169":{name:"学术写作十讲（杜垚版）",family:"学术",level:3,pitch:"学术全流程。",bridge:"框架",emoji:"🎓",tags:["学术","框架","职业文本"],author:"杜垚",publisher:"北京大学出版社"},
+    "E17":{name:"写作常谈",family:"通用",level:2,pitch:"叶圣陶的写作常谈。",bridge:"理论",emoji:"✍️",tags:["通用","理论","不限"],author:"叶圣陶",publisher:"待确认"},
+    "E170":{name:"The Craft of Research",family:"学术",level:4,pitch:"研究论证经典。",bridge:"理论",emoji:"🎓",tags:["学术","理论","职业文本"],author:"韦恩·布斯 等",publisher:"待确认",excluded:true},
+    "E171":{name:"公文写作大手笔",family:"公文",level:3,pitch:"小笔头到笔杆子。",bridge:"范例",emoji:"📄",tags:["公文","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E172":{name:"笔杆子是怎样炼成的",family:"公文",level:3,pitch:"模板+实战。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"李永新",publisher:"待确认",excluded:true},
+    "E173":{name:"公文写作底层逻辑",family:"公文",level:2,pitch:"写得出写得好写得快。",bridge:"理论",emoji:"📄",tags:["公文","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E174":{name:"公文写作32讲",family:"公文",level:3,pitch:"系统公文课。",bridge:"框架",emoji:"📄",tags:["公文","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E175":{name:"公文写作精进：28个锦囊",family:"公文",level:3,pitch:"笔杆子锦囊。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E176":{name:"公文写作精进：从新手到笔杆子",family:"公文",level:3,pitch:"进阶路径。",bridge:"框架",emoji:"📄",tags:["公文","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E177":{name:"公文写作从新手到高手",family:"公文",level:3,pitch:"新手到高手。",bridge:"框架",emoji:"📄",tags:["公文","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E178":{name:"公文写作进阶指南",family:"公文",level:3,pitch:"进阶指南。",bridge:"框架",emoji:"📄",tags:["公文","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E179":{name:"公文写作一点通",family:"公文",level:2,pitch:"进阶版入门。",bridge:"框架",emoji:"📄",tags:["公文","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E18":{name:"金字塔原理实战篇",family:"通用",level:3,pitch:"结构化表达的训练册。",bridge:"练习",emoji:"✍️",tags:["通用","练习","职业文本"],author:"待确认",publisher:"待确认"},
+    "E180":{name:"寻道公文",family:"公文",level:3,pitch:"50种方法指津。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E181":{name:"功夫在文字之外",family:"公文",level:3,pitch:"公文写作的底层修养。",bridge:"理论",emoji:"📄",tags:["公文","理论","职业文本"],author:"待确认",publisher:"待确认"},
+    "E182":{name:"AI赋能公文写作",family:"公文",level:2,pitch:"AI与公文。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E183":{name:"AI公文写作：场景+方法+提示词",family:"公文",level:2,pitch:"AI公文实操。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E184":{name:"办公室工作规范速查手册",family:"公文",level:1,pitch:"办公室规范速查。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E185":{name:"办公室工作手记：读懂领导",family:"公文",level:2,pitch:"公文背后的沟通。",bridge:"范例",emoji:"📄",tags:["公文","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E186":{name:"笔杆子修炼之道",family:"公文",level:3,pitch:"长期成长路径。",bridge:"范例",emoji:"📄",tags:["公文","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E187":{name:"零基础学公文写作+金句+AI一本通",family:"公文",level:1,pitch:"三合一入门。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E188":{name:"职场AI写作特训营",family:"公文",level:2,pitch:"33天公文进阶。",bridge:"练习",emoji:"📄",tags:["公文","练习","职业文本"],author:"待确认",publisher:"待确认"},
+    "E189":{name:"AI公文写作：理念方法实务",family:"公文",level:2,pitch:"AI公文框架。",bridge:"框架",emoji:"📄",tags:["公文","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E19":{name:"写作的诞生",family:"心理",level:2,pitch:"写作心理与习惯指南。",bridge:"理论",emoji:"🕊️",tags:["心理","理论","不限"],author:"待确认",publisher:"待确认"},
+    "E190":{name:"AI辅助公文写作实战",family:"公文",level:2,pitch:"AI公文实操。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E191":{name:"公文写作金句",family:"公文",level:1,pitch:"公文语料库。",bridge:"工具书",emoji:"📄",tags:["公文","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E192":{name:"职场写作全书",family:"通用",level:2,pitch:"职场通用写作。",bridge:"框架",emoji:"✍️",tags:["通用","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E193":{name:"富兰克林·柯维商务写作与沟通圣经",family:"通用",level:3,pitch:"112种商务沟通。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E194":{name:"袖珍商务写作手册",family:"通用",level:1,pitch:"便携商务指南。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","职业文本"],author:"待确认",publisher:"待确认"},
+    "E195":{name:"最佳商务写作",family:"通用",level:3,pitch:"商务写作原则。",bridge:"框架",emoji:"✍️",tags:["通用","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E196":{name:"电影剧作问题攻略",family:"编剧",level:3,pitch:"悉德·菲尔德的问题诊断。",bridge:"工具书",emoji:"🎬",tags:["编剧","工具书","剧本"],author:"悉德·菲尔德",publisher:"待确认"},
+    "E197":{name:"电影编剧创作指南",family:"编剧",level:3,pitch:"悉德·菲尔德创作指南。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"悉德·菲尔德",publisher:"待确认"},
+    "E198":{name:"救猫咪2",family:"编剧",level:2,pitch:"节拍表续编。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"待确认",publisher:"待确认"},
+    "E199":{name:"剧本：影视写作的艺术",family:"编剧",level:3,pitch:"沃尔特的剧本课。",bridge:"范例",emoji:"🎬",tags:["编剧","范例","剧本"],author:"待确认",publisher:"待确认"},
+    "E20":{name:"唤醒创作力",family:"心理",level:2,pitch:"创造力恢复的经典。",bridge:"练习",emoji:"🕊️",tags:["心理","练习","不限"],author:"待确认",publisher:"待确认"},
+    "E200":{name:"编剧：步步为营",family:"编剧",level:2,pitch:"编剧入门路径。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"待确认",publisher:"待确认"},
+    "E201":{name:"编剧的艺术",family:"编剧",level:3,pitch:"人物驱动戏剧经典。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"待确认",publisher:"待确认"},
+    "E202":{name:"编剧心理学",family:"编剧",level:3,pitch:"人物与冲突的心理学。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"待确认",publisher:"待确认"},
+    "E203":{name:"电影编剧的秘密",family:"编剧",level:3,pitch:"芦苇访谈录。",bridge:"范例",emoji:"🎬",tags:["编剧","范例","剧本"],author:"芦苇",publisher:"待确认"},
+    "E204":{name:"21天搞定电影剧本",family:"编剧",level:2,pitch:"剧本速成。",bridge:"练习",emoji:"🎬",tags:["编剧","练习","剧本"],author:"待确认",publisher:"待确认"},
+    "E205":{name:"编剧备忘录",family:"编剧",level:3,pitch:"编剧要点备忘。",bridge:"工具书",emoji:"🎬",tags:["编剧","工具书","剧本"],author:"待确认",publisher:"待确认"},
+    "E206":{name:"编剧的核心技巧",family:"编剧",level:3,pitch:"尼尔·克思的技巧。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"待确认",publisher:"待确认"},
+    "E207":{name:"论戏剧性",family:"编剧",level:4,pitch:"中文戏剧理论经典。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"待确认",publisher:"待确认"},
+    "E208":{name:"拉片子",family:"编剧",level:3,pitch:"影片精读与编剧分析。",bridge:"范例",emoji:"🎬",tags:["编剧","范例","剧本"],author:"待确认",publisher:"待确认"},
+    "E209":{name:"雕刻时光",family:"编剧",level:4,pitch:"塔可夫斯基创作札记。",bridge:"范例",emoji:"🎬",tags:["编剧","范例","剧本"],author:"安德烈·塔可夫斯基",publisher:"待确认"},
+    "E21":{name:"文案高手",family:"文案",level:2,pitch:"文案判断力的进阶读本。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E210":{name:"对白",family:"编剧",level:4,pitch:"麦基对白专论。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"罗伯特·麦基",publisher:"待确认",excluded:true},
+    "E211":{name:"人物",family:"编剧",level:4,pitch:"麦基人物专论。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"罗伯特·麦基",publisher:"待确认"},
+    "E212":{name:"故事",family:"编剧",level:4,pitch:"麦基故事原典。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"罗伯特·麦基",publisher:"待确认",excluded:true},
+    "E213":{name:"电影编剧没有秘密",family:"编剧",level:3,pitch:"深层方法与行业经验。",bridge:"范例",emoji:"🎬",tags:["编剧","范例","剧本"],author:"待确认",publisher:"待确认"},
+    "E214":{name:"编剧之路",family:"编剧",level:3,pitch:"金奖编剧的创作路径。",bridge:"范例",emoji:"🎬",tags:["编剧","范例","剧本"],author:"待确认",publisher:"待确认"},
+    "E215":{name:"打草稿",family:"编剧",level:2,pitch:"编剧思维训练表。",bridge:"练习",emoji:"🎬",tags:["编剧","练习","剧本"],author:"待确认",publisher:"待确认"},
+    "E216":{name:"第一次写剧本就上手",family:"编剧",level:1,pitch:"零基础图解入门。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"待确认",publisher:"待确认"},
+    "E217":{name:"角色人物的解剖",family:"编剧",level:3,pitch:"人物灵魂解剖。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"待确认",publisher:"待确认"},
+    "E218":{name:"故事与剧本写作",family:"编剧",level:3,pitch:"跨媒介剧本方法。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"待确认",publisher:"待确认"},
+    "E219":{name:"Story Structure and Development",family:"编剧",level:3,pitch:"动画游戏XR叙事。",bridge:"框架",emoji:"🎬",tags:["编剧","框架","剧本"],author:"待确认",publisher:"待确认"},
+    "E22":{name:"写好前五十页",family:"小说",level:3,pitch:"书稿开篇的专项训练。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"待确认",publisher:"待确认"},
+    "E220":{name:"如何写影评",family:"非虚构",level:2,pitch:"影评写作入门。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E221":{name:"日常的金字塔",family:"诗歌/散文",level:2,pitch:"写诗入门十一阶。",bridge:"框架",emoji:"📘",tags:["诗歌","散文","框架","诗歌散文"],author:"待确认",publisher:"待确认"},
+    "E222":{name:"意象的帝国",family:"诗歌/散文",level:3,pitch:"诗的写作课。",bridge:"框架",emoji:"📘",tags:["诗歌","散文","框架","诗歌散文"],author:"待确认",publisher:"待确认"},
+    "E223":{name:"诗的八堂课",family:"诗歌/散文",level:3,pitch:"诗歌鉴赏与写作。",bridge:"范例",emoji:"📘",tags:["诗歌","散文","范例","诗歌散文"],author:"待确认",publisher:"待确认"},
+    "E224":{name:"诗的九重门",family:"诗歌/散文",level:4,pitch:"诗歌深度阅读。",bridge:"范例",emoji:"📘",tags:["诗歌","散文","范例","诗歌散文"],author:"待确认",publisher:"待确认"},
+    "E225":{name:"给一个青年诗人的十封信",family:"诗歌/散文",level:2,pitch:"里尔克的写作信札。",bridge:"范例",emoji:"📘",tags:["诗歌","散文","范例","诗歌散文"],author:"里尔克",publisher:"待确认"},
+    "E226":{name:"诗学",family:"编剧",level:4,pitch:"亚里士多德叙事理论源头。",bridge:"理论",emoji:"🎬",tags:["编剧","理论","剧本"],author:"亚里士多德",publisher:"待确认"},
+    "E227":{name:"创意写作完全手册",family:"通用",level:3,pitch:"多文体创意写作。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E228":{name:"大学创意写作",family:"通用",level:3,pitch:"创意写作框架教材。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E229":{name:"写作魔法书",family:"通用",level:1,pitch:"创意写作练习集。",bridge:"练习",emoji:"✍️",tags:["通用","练习","不限"],author:"待确认",publisher:"待确认"},
+    "E23":{name:"作家创意手册",family:"通用",level:2,pitch:"创意启动的练习集。",bridge:"练习",emoji:"✍️",tags:["通用","练习","不限"],author:"待确认",publisher:"待确认"},
+    "E230":{name:"诗性的寻找",family:"通用",level:3,pitch:"文学创作与欣赏。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E231":{name:"巴黎评论·作家访谈",family:"通用",level:3,pitch:"作家工作方式。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E232":{name:"毛姆读书随笔",family:"通用",level:3,pitch:"阅读到写作的转化。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"毛姆",publisher:"待确认"},
+    "E233":{name:"七十二堂写作课",family:"通用",level:2,pitch:"中文写作基础训练。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E234":{name:"文章例话",family:"通用",level:2,pitch:"27篇范文点评。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E235":{name:"文章五诀",family:"通用",level:3,pitch:"形事情理典五维。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E236":{name:"怎样写作",family:"通用",level:2,pitch:"叶圣陶写作入门。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E237":{name:"我的写作课",family:"小说",level:3,pitch:"余华谈写作。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"余华",publisher:"待确认"},
+    "E238":{name:"小说修辞学",family:"小说",level:4,pitch:"叙事视角理论原典。",bridge:"理论",emoji:"📖",tags:["小说","理论"],author:"待确认",publisher:"待确认"},
+    "E239":{name:"翻译乃艺术",family:"通用",level:4,pitch:"傅雷论中文表达。",bridge:"理论",emoji:"✍️",tags:["通用","理论","不限"],author:"傅雷",publisher:"待确认"},
+    "E24":{name:"写作脑科学",family:"心理",level:3,pitch:"从认知科学理解写作卡顿。",bridge:"理论",emoji:"🕊️",tags:["心理","理论","不限"],author:"待确认",publisher:"待确认"},
+    "E240":{name:"修辞学发凡",family:"通用",level:4,pitch:"中文修辞学奠基。",bridge:"理论",emoji:"✍️",tags:["通用","理论","不限"],author:"待确认",publisher:"待确认"},
+    "E241":{name:"人间词话",family:"诗歌/散文",level:3,pitch:"境界说与表达层次。",bridge:"理论",emoji:"📘",tags:["诗歌","散文","理论","诗歌散文"],author:"待确认",publisher:"待确认"},
+    "E242":{name:"高效写作的秘密",family:"通用",level:3,pitch:"写作系统训练。",bridge:"练习",emoji:"✍️",tags:["通用","练习","不限"],author:"杰拉尔德·格拉夫、凯茜·比肯施泰因",publisher:"待确认",excluded:true},
+    "E243":{name:"写作课（叶开）",family:"通用",level:3,pitch:"深阅读激活写作。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E244":{name:"修炼好文笔",family:"通用",level:3,pitch:"24节写作课。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E245":{name:"学会写作",family:"通用",level:2,pitch:"持续产出方法。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"粥左罗",publisher:"待确认",excluded:true},
+    "E246":{name:"让写作成为自我精进的武器",family:"通用",level:2,pitch:"写作与职业发展。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E247":{name:"高效写作：持续打造爆文",family:"文案",level:2,pitch:"高频产出策略。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E248":{name:"写作是最好的自我投资",family:"通用",level:2,pitch:"写作与个人品牌。",bridge:"范例",emoji:"✍️",tags:["通用","范例","不限"],author:"待确认",publisher:"待确认"},
+    "E249":{name:"The Oxford Essential Guide to Writing",family:"英文",level:3,pitch:"牛津写作指南。",bridge:"工具书",emoji:"🔤",tags:["英文","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E25":{name:"输出力",family:"通用",level:2,pitch:"把想法变成输出的行动指南。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E250":{name:"如何遣词造句",family:"英文",level:4,pitch:"句子层面的英文写作。",bridge:"练习",emoji:"🔤",tags:["英文","练习","不限"],author:"待确认",publisher:"待确认"},
+    "E251":{name:"英语章法",family:"英文",level:3,pitch:"句子到篇章。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E252":{name:"How to Speak and Write Correctly",family:"英文",level:2,pitch:"英文正确表达经典。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E253":{name:"Dreyer's English",family:"英文",level:3,pitch:"当代英文用法。",bridge:"工具书",emoji:"🔤",tags:["英文","工具书","不限"],author:"本杰明·德雷尔",publisher:"待确认",excluded:true},
+    "E254":{name:"The Pen Commandments",family:"英文",level:2,pitch:"英文写作戒律。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E255":{name:"The Little Red Writing Book",family:"英文",level:1,pitch:"20条结构风格原则。",bridge:"框架",emoji:"🔤",tags:["英文","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E256":{name:"简明英语写作手册",family:"英文",level:2,pitch:"Elements中英对照。",bridge:"工具书",emoji:"🔤",tags:["英文","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E257":{name:"好文案一句话就够了",family:"文案",level:1,pitch:"短句卖点。",bridge:"框架",emoji:"💬",tags:["文案","框架","职业文本"],author:"川上徹也",publisher:"待确认",excluded:true},
+    "E258":{name:"文案训练手册",family:"文案",level:3,pitch:"文案底层说服。",bridge:"练习",emoji:"💬",tags:["文案","练习","职业文本"],author:"约瑟夫·休格曼",publisher:"待确认",excluded:true},
+    "E259":{name:"写作疗愈",family:"心理",level:2,pitch:"写作与心理疗愈。",bridge:"自由书写",emoji:"🕊️",tags:["心理","自由书写","不限"],author:"刘主编（刘杨）、蓝橙",publisher:"待确认",excluded:true},
+    "E26":{name:"高效写作的秘密",family:"通用",level:3,pitch:"写不清楚的系统训练。",bridge:"练习",emoji:"✍️",tags:["通用","练习","不限"],author:"杰拉尔德·格拉夫、凯茜·比肯施泰因",publisher:"待确认"},
+    "E260":{name:"写出来感觉好多了",family:"心理",level:1,pitch:"表达性写作实证指南。",bridge:"自由书写",emoji:"🕊️",tags:["心理","自由书写","不限"],author:"詹姆斯·彭内贝克",publisher:"待确认",excluded:true},
+    "E27":{name:"精简写作",family:"通用",level:2,pitch:"快节奏时代的短表达。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E28":{name:"写作提高一点点",family:"通用",level:2,pitch:"小步迭代的改善路径。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E29":{name:"冲突与悬念",family:"小说",level:3,pitch:"冲突驱动的专项读本。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"詹姆斯·斯科特·贝尔",publisher:"待确认",excluded:true},
+    "E30":{name:"10倍写作术",family:"通用",level:2,pitch:"提升产出的实操书。",bridge:"工具书",emoji:"✍️",tags:["通用","工具书","不限"],author:"待确认",publisher:"待确认"},
+    "E31":{name:"小说课",family:"小说",level:3,pitch:"拆解经典的审美课。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"毕飞宇",publisher:"待确认",excluded:true},
+    "E32":{name:"一本小小的红色写作书",family:"通用",level:1,pitch:"20条结构风格原则。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E33":{name:"文案之道",family:"文案",level:3,pitch:"32位广告人的心法汇编。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E34":{name:"科学的广告",family:"文案",level:2,pitch:"霍普金斯的广告原典。",bridge:"理论",emoji:"💬",tags:["文案","理论","职业文本"],author:"克劳德·霍普金斯",publisher:"待确认"},
+    "E35":{name:"顶尖文案",family:"文案",level:3,pitch:"广告文案的经典技巧。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"待确认",publisher:"待确认"},
+    "E36":{name:"麦肯锡写作技术与逻辑思考",family:"通用",level:3,pitch:"商务写作的逻辑方法。",bridge:"框架",emoji:"✍️",tags:["通用","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E37":{name:"麦肯锡结构化高效沟通",family:"通用",level:3,pitch:"结构化表达在写作中的应用。",bridge:"框架",emoji:"✍️",tags:["通用","框架","职业文本"],author:"待确认",publisher:"待确认"},
+    "E38":{name:"写作疗愈",family:"心理",level:2,pitch:"写作与心理疗愈的结合。",bridge:"自由书写",emoji:"🕊️",tags:["心理","自由书写","不限"],author:"刘主编（刘杨）、蓝橙",publisher:"待确认"},
+    "E39":{name:"写我人生诗",family:"诗歌/散文",level:2,pitch:"诗歌写作的入门练习。",bridge:"练习",emoji:"📘",tags:["诗歌","散文","练习","诗歌散文"],author:"待确认",publisher:"待确认"},
+    "E40":{name:"一年通往作家路",family:"通用",level:2,pitch:"12堂文学写作课。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E41":{name:"小说面面观",family:"小说",level:3,pitch:"扁平/圆形人物的理论原典。",bridge:"理论",emoji:"📖",tags:["小说","理论"],author:"待确认",publisher:"待确认"},
+    "E42":{name:"小说的艺术",family:"小说",level:4,pitch:"小说文论的经典。",bridge:"理论",emoji:"📖",tags:["小说","理论"],author:"待确认",publisher:"待确认"},
+    "E43":{name:"成为作家",family:"心理",level:2,pitch:"写作心理与习惯训练。",bridge:"练习",emoji:"🕊️",tags:["心理","练习","不限"],author:"多萝西娅·布兰德",publisher:"待确认",excluded:true},
+    "E44":{name:"小说写作教程",family:"小说",level:3,pitch:"虚构文学速成全攻略。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E45":{name:"开始写吧！虚构文学创作",family:"小说",level:3,pitch:"作家练习合集。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"待确认",publisher:"待确认"},
+    "E46":{name:"小说写作完全手册",family:"小说",level:3,pitch:"百科式小说工具书。",bridge:"工具书",emoji:"📖",tags:["小说","工具书"],author:"待确认",publisher:"待确认"},
+    "E47":{name:"布洛克小说写作手册",family:"小说",level:2,pitch:"侦探大师的实用手册。",bridge:"工具书",emoji:"📖",tags:["小说","工具书"],author:"劳伦斯·布洛克",publisher:"待确认"},
+    "E48":{name:"布洛克的小说学堂",family:"小说",level:2,pitch:"问答体小说课。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"劳伦斯·布洛克",publisher:"待确认"},
+    "E49":{name:"小说的八百万种写法",family:"小说",level:3,pitch:"小说可能性的展开。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"待确认",publisher:"待确认"},
+    "E50":{name:"为你的生活写作",family:"小说",level:2,pitch:"布洛克小说一日课。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"劳伦斯·布洛克",publisher:"待确认"},
+    "E51":{name:"小说写作一本通",family:"小说",level:3,pitch:"从创意到出版。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E52":{name:"如何写出一篇好小说",family:"小说",level:3,pitch:"从新手到畅销。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E53":{name:"小说写作入门",family:"小说",level:2,pitch:"零基础小说路径。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E54":{name:"小说写作实训教程",family:"小说",level:3,pitch:"训练导向的教材。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"待确认",publisher:"待确认"},
+    "E55":{name:"小说家的致富经",family:"小说",level:3,pitch:"职业化写作视角。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"待确认",publisher:"待确认"},
+    "E56":{name:"故事策略",family:"小说",level:3,pitch:"故事结构的策略拆解。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E57":{name:"经典人物原型45种",family:"小说",level:3,pitch:"人物原型工具箱。",bridge:"工具书",emoji:"📖",tags:["小说","工具书"],author:"待确认",publisher:"待确认"},
+    "E58":{name:"千面英雄",family:"类型",level:4,pitch:"英雄之旅的原典。",bridge:"理论",emoji:"📚",tags:["类型","理论","小说"],author:"约瑟夫·坎贝尔",publisher:"待确认"},
+    "E59":{name:"英雄之旅",family:"小说",level:3,pitch:"可操作的故事方法。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E60":{name:"通向叙事之路",family:"小说",level:4,pitch:"虚构写作十讲。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"待确认",publisher:"待确认"},
+    "E61":{name:"南方周末虚构写作课",family:"小说",level:3,pitch:"六位小说家的20堂课。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"待确认",publisher:"待确认"},
+    "E62":{name:"想象力写作",family:"通用",level:3,pitch:"跨文体的创意技巧。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"待确认",publisher:"待确认"},
+    "E63":{name:"科幻还能这样写",family:"类型",level:3,pitch:"科幻名家十讲。",bridge:"范例",emoji:"📚",tags:["类型","范例","小说"],author:"待确认",publisher:"待确认"},
+    "E64":{name:"科幻小说赏析与写作",family:"类型",level:3,pitch:"科幻类型专项。",bridge:"范例",emoji:"📚",tags:["类型","范例","小说"],author:"待确认",publisher:"待确认"},
+    "E65":{name:"30天写小说",family:"小说",level:2,pitch:"完稿冲刺计划。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"克里斯·巴蒂",publisher:"待确认",excluded:true},
+    "E66":{name:"短篇小说写作指南",family:"小说",level:3,pitch:"短篇体裁专项。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E67":{name:"故事写作",family:"小说",level:3,pitch:"蔡骏的实战视角。",bridge:"范例",emoji:"📖",tags:["小说","范例"],author:"待确认",publisher:"待确认"},
+    "E68":{name:"畅销作家写作全技巧",family:"小说",level:3,pitch:"日本畅销小说技巧。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E69":{name:"网络文学创作原理",family:"类型",level:3,pitch:"网文机制系统论。",bridge:"理论",emoji:"📚",tags:["类型","理论","小说"],author:"王祥",publisher:"待确认",excluded:true},
+    "E70":{name:"类型故事写作大师班",family:"类型",level:4,pitch:"14种类型结构。",bridge:"框架",emoji:"📚",tags:["类型","框架","小说"],author:"约翰·特鲁比",publisher:"待确认",excluded:true},
+    "E71":{name:"这样写出好故事：人物对话",family:"小说",level:3,pitch:"对话专项。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"待确认",publisher:"待确认"},
+    "E72":{name:"这样写出好故事：描写与背景",family:"小说",level:3,pitch:"场景专项。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"待确认",publisher:"待确认"},
+    "E73":{name:"如何创作炫人耳目的对话",family:"小说",level:3,pitch:"对话独立教程。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E74":{name:"小说写作工具箱",family:"小说",level:3,pitch:"125招故事工具。",bridge:"工具书",emoji:"📖",tags:["小说","工具书"],author:"待确认",publisher:"待确认"},
+    "E75":{name:"情节与人物",family:"小说",level:3,pitch:"情节与人物弧光。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E76":{name:"故事工程",family:"小说",level:3,pitch:"六大核心技能。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E77":{name:"故事力学",family:"小说",level:3,pitch:"叙事动力学。",bridge:"理论",emoji:"📖",tags:["小说","理论"],author:"待确认",publisher:"待确认"},
+    "E78":{name:"小说创作技能拓展",family:"小说",level:3,pitch:"技能模块训练。",bridge:"练习",emoji:"📖",tags:["小说","练习"],author:"待确认",publisher:"待确认"},
+    "E79":{name:"从创意到畅销书",family:"小说",level:3,pitch:"修改与自我编辑。",bridge:"框架",emoji:"📖",tags:["小说","框架"],author:"待确认",publisher:"待确认"},
+    "E80":{name:"开始写吧！影视剧本创作",family:"编剧",level:3,pitch:"剧本练习体系。",bridge:"练习",emoji:"🎬",tags:["编剧","练习","剧本"],author:"待确认",publisher:"待确认"},
+    "E81":{name:"从零开始写故事",family:"非虚构",level:2,pitch:"非虚构11堂必修课。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E82":{name:"写出心灵深处的故事",family:"非虚构",level:2,pitch:"非虚构创作指南。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E83":{name:"开始写吧！非虚构文学创作",family:"非虚构",level:3,pitch:"非虚构练习合集。",bridge:"练习",emoji:"📰",tags:["非虚构","练习"],author:"待确认",publisher:"待确认"},
+    "E84":{name:"故事如何真实而精彩",family:"非虚构",level:3,pitch:"创意非虚构大师课。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E85":{name:"非虚构写作课",family:"非虚构",level:2,pitch:"简·耶格尔的指南。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"简·耶格尔",publisher:"待确认"},
+    "E86":{name:"非虚构写作指南",family:"非虚构",level:2,pitch:"非虚构入门。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E87":{name:"非虚构小说的写作",family:"非虚构",level:3,pitch:"霍洛韦尔的经典。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"霍洛韦尔",publisher:"待确认"},
+    "E88":{name:"巴黎评论·非虚构作家访谈",family:"非虚构",level:4,pitch:"一线方法口述。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"《巴黎评论》编辑部",publisher:"待确认",excluded:true},
+    "E89":{name:"中国非虚构写作名家访谈录",family:"非虚构",level:4,pitch:"国内一线方法论。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E90":{name:"新新新闻主义",family:"非虚构",level:3,pitch:"非虚构叙事边界。",bridge:"理论",emoji:"📰",tags:["非虚构","理论"],author:"待确认",publisher:"待确认"},
+    "E91":{name:"新闻写作与报道训练教程",family:"非虚构",level:3,pitch:"新闻写作系统训练。",bridge:"练习",emoji:"📰",tags:["非虚构","练习"],author:"待确认",publisher:"待确认"},
+    "E92":{name:"报道如何深入",family:"非虚构",level:3,pitch:"深度报道方法。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E93":{name:"冰点故事",family:"非虚构",level:3,pitch:"中国特稿范本。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E94":{name:"控制自然",family:"非虚构",level:4,pitch:"麦克菲的结构教材。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"约翰·麦克菲",publisher:"待确认"},
+    "E95":{name:"江城",family:"非虚构",level:3,pitch:"非虚构观察者位置。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E96":{name:"被仰望与被遗忘中",family:"非虚构",level:4,pitch:"新新闻主义人物特写。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E97":{name:"幽暗国度",family:"非虚构",level:4,pitch:"旅行/纪实的个人视角。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E98":{name:"东京罪恶",family:"非虚构",level:3,pitch:"调查报道的叙事张力。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"待确认",publisher:"待确认"},
+    "E99":{name:"哈佛非虚构写作课",family:"非虚构",level:3,pitch:"非虚构标杆。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"马克·克雷默、温迪·考尔 编",publisher:"待确认",excluded:true},
+  },
+  /* 相关推荐候选池：260本扩展书 */
+  extPool:["E01","E02","E03","E04","E05","E06","E07","E08","E09","E10","E100","E101","E102","E103","E104","E105","E106","E107","E108","E109","E11","E110","E111","E112","E113","E114","E115","E116","E117","E118","E119","E12","E120","E121","E122","E123","E124","E125","E126","E127","E128","E129","E13","E130","E131","E132","E133","E134","E135","E136","E137","E138","E139","E14","E140","E141","E142","E143","E144","E145","E146","E147","E148","E149","E15","E150","E151","E152","E153","E154","E155","E156","E157","E158","E159","E16","E160","E161","E162","E163","E164","E165","E166","E167","E168","E169","E17","E170","E171","E172","E173","E174","E175","E176","E177","E178","E179","E18","E180","E181","E182","E183","E184","E185","E186","E187","E188","E189","E19","E190","E191","E192","E193","E194","E195","E196","E197","E198","E199","E20","E200","E201","E202","E203","E204","E205","E206","E207","E208","E209","E21","E210","E211","E212","E213","E214","E215","E216","E217","E218","E219","E22","E220","E221","E222","E223","E224","E225","E226","E227","E228","E229","E23","E230","E231","E232","E233","E234","E235","E236","E237","E238","E239","E24","E240","E241","E242","E243","E244","E245","E246","E247","E248","E249","E25","E250","E251","E252","E253","E254","E255","E256","E257","E258","E259","E26","E260","E27","E28","E29","E30","E31","E32","E33","E34","E35","E36","E37","E38","E39","E40","E41","E42","E43","E44","E45","E46","E47","E48","E49","E50","E51","E52","E53","E54","E55","E56","E57","E58","E59","E60","E61","E62","E63","E64","E65","E66","E67","E68","E69","E70","E71","E72","E73","E74","E75","E76","E77","E78","E79","E80","E81","E82","E83","E84","E85","E86","E87","E88","E89","E90","E91","E92","E93","E94","E95","E96","E97","E98","E99"],
+  templates:{
+    same:"想沿着《{primary}》继续深入，读《{rec}》。",
+    cross:"如果你的短板在{bridge}，《{rec}》正好补上。",
+    practice:"把《{primary}》的方法落成练习，用《{rec}》。",
+    light:"想先轻量上手？《{rec}》随手翻、马上用。"
+  },
+
+  genreToTone:{
+    "小说":"novel","非虚构":"nonfiction",
+    "文案":"pro","公文":"pro","学术":"pro","职场":"pro","新媒体":"pro","编剧":"pro","英文":"pro",
+    "通用":"neutral","中文":"neutral","心理":"neutral"
+  },
+
+  /* 卡点 → 角色配比（同族/跨族/练习/轻量），总和恒为 6 */
+  blockQuota:{
+    noTime:{same:1,cross:2,practice:1,light:2},
+    notUseful:{same:2,cross:1,practice:2,light:1},
+    stuck:{same:2,cross:3,practice:1,light:0},
+    afraid:{same:1,cross:2,practice:1,light:2},
+    skip:{same:2,cross:2,practice:1,light:1},
+    _default:{same:2,cross:2,practice:1,light:1}
+  }
+};
+
+
+/* ===================== 纯逻辑函数（不依赖 DOM，便于单独验证） ===================== */
+function getBook(id){ return DATA.books[id] || null; }
+
+function toneGroupOf(genre){ return DATA.genreToTone[genre] || "neutral"; }
+
+/* 匹配度 = 基础分 + 文体一致 +3 / 不一致 −3，封顶 95 保底 80；"还没定"(undecided) 与中性文体不调整 */
+function calcMatch(base, genre, toneValue){
+  let adj = 0;
+  const g = toneGroupOf(genre);
+  if(toneValue && toneValue !== "undecided" && g !== "neutral"){
+    adj = (g === toneValue) ? 3 : -3;
+  }
+  return Math.max(80, Math.min(95, base + adj));
+}
+
+/* 判断一本书符合哪些推荐角色：same 同族深化 / cross 跨族补短 / practice 练习工作本 / light 轻量速查
+   —— 主类相同算同族；子类与所有核心书都不同即可承担“跨族补短”（通用写作书也适用） */
+function rolesOf(book, coreFamilies, coreSubs){
+  const parts = book.family.split("/");
+  const fam = parts[0], sub = parts[1] || "";
+  const r = [];
+  if(coreFamilies.has(fam)) r.push("same");
+  if(!coreSubs.has(sub)) r.push("cross");
+  if(book.tags.some(t=>["指南","工具","手册","练习","训练","方法","模板"].includes(t))) r.push("practice");
+  if(book.level <= 2) r.push("light");
+  return r;
+}
+
+/* 生成一条角色化推荐文案：专属推荐语（书自身 pitch）+ 角色化模板 */
+function recText(book, role, primaryName, bridge){
+  const tpl = DATA.templates[role] || DATA.templates.same;
+  const sentence = tpl.replace(/\{primary\}/g,primaryName).replace(/\{bridge\}/g,bridge).replace(/\{rec\}/g,book.name);
+  return book.pitch + " " + sentence;
+}
+
+/* 相关推荐主算法：标签重合打分 → tone 加权 → blockTag 配比 → 补齐 6 本 */
+function buildRecommendations(end, toneValue, blockValue){
+  const coreBooks = end.books.map(b=>getBook(b.id)).filter(Boolean);
+  const primary = coreBooks[0] || {name:"核心书",bridge:"短板",pitch:""};
+  const coreFamilies = new Set(coreBooks.map(b=>b.family.split("/")[0]));
+  const coreSubs = new Set(coreBooks.map(b=>(b.family.split("/")[1]||"")));
+  const targetTags = new Set();
+  coreBooks.concat([{tags:end.tags}]).forEach(b=>(b.tags||[]).forEach(t=>targetTags.add(t)));
+
+  // 打分
+  let scored = DATA.extPool.map(id=>getBook(id)).filter(Boolean).map(book=>{
+    const overlap = book.tags.filter(t=>targetTags.has(t)).length;
+    const fam = toneGroupOf(book.family.split("/")[0]);
+    // toneTag 文体过滤：undecided 不过滤；neutral 类通用书通吃；明确文体不符者重罚排末位
+    const toneMismatch = toneValue && toneValue!=="undecided" && fam!=="neutral" && toneValue!==fam;
+    const score = overlap*2 - (toneMismatch?6:0);
+    return {book, score, overlap, toneMismatch, roles: rolesOf(book,coreFamilies,coreSubs)};
+  });
+  scored.sort((a,b)=> b.score-a.score || b.overlap-a.overlap);
+
+  const quota = Object.assign({},DATA.blockQuota._default, DATA.blockQuota[blockValue]||{});
+  const used = new Set(), picked = [];
+  const order = ["same","cross","practice","light"];
+
+  order.forEach(role=>{
+    let need = quota[role]||0;
+    for(const s of scored){
+      if(need<=0) break;
+      if(used.has(s.book.family+"|"+s.book.name)) continue;
+      if(!s.roles.includes(role)) continue;
+      used.add(s.book.family+"|"+s.book.name);
+      picked.push({book:s.book,role}); need--;
+    }
+  });
+  // 不足 6 本按分数补齐
+  if(picked.length<6){
+    for(const s of scored){
+      if(picked.length>=6) break;
+      const key=s.book.family+"|"+s.book.name;
+      if(used.has(key)) continue;
+      used.add(key);
+      picked.push({book:s.book,role: s.roles[0]||"same"});
+    }
+  }
+  // 去重：以「书名+作者」为辅助键（ISBN 待确认，暂无法作为最终唯一键）
+  // 书名相同且作者相同（含均待确认）视为同书，剔除；书名相同但作者不同则保留
+  const coreKeys = new Set(coreBooks.map(b=>b.name+"|"+(b.author||"待确认")).filter(Boolean));
+  const recKey = b=>b.name+"|"+(b.author||"待确认");
+  const roleName={same:"同族深化",cross:"跨族补短",practice:"练习工作本",light:"轻量速查"};
+  return picked.filter(p=>!coreKeys.has(recKey(p.book))).slice(0,6).map(p=>({
+    name:p.book.name, role:p.role, roleLabel:roleName[p.role]||"相关推荐",
+    text:recText(p.book,p.role,primary.name,primary.bridge||"短板")
+  }));
+}
+
+/* ===== UI 逻辑 START ===== */
+const stage=document.getElementById("stage");
+const dotsEl=document.getElementById("dots");
+const trans=document.getElementById("trans");
+const transTxt=document.getElementById("transTxt");
+const replayBtn=document.getElementById("replay");
+
+let S={screen:"intro",qi:0,answers:{},tone:null,block:null,busy:false};
+let START_ANSWERS={}; // 进入本题时答案快照，用于改选判定
+
+function setDots(){
+  dotsEl.innerHTML="";
+  const total=5;
+  for(let i=0;i<total;i++){
+    const d=document.createElement("div");
+    d.className="dot"+(S.screen==="question"&&i===S.qi?" on":"")+
+      ((S.screen!=="intro"&&i<S.qi)||S.screen==="ending"?" done":"");
+    dotsEl.appendChild(d);
+  }
+}
+
+function renderIntro(){
+  S.screen="intro"; setDots(); replayBtn.classList.remove("show");
+  const paras=DATA.meta.opening.map(t=>`<p class="narrator" style="margin:0 0 8px">${t}</p>`).join("");
+  stage.innerHTML=`
+    <div class="scene" style="font-size:42px;margin:18px 0 20px">🚪</div>
+    <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:16px;padding:20px 16px">${paras}</div>
+    <button class="btn" id="start">推门而入 →</button>
+    <div class="hint">5 个问题，约 6—8 分钟 · 选最接近你此刻状态的那一个</div>`;
+  document.getElementById("start").onclick=()=>gotoQuestion(0);
+}
+
+function renderQuestion(i){
+  S.screen="question"; S.qi=i; setDots(); replayBtn.classList.remove("show");
+  START_ANSWERS=Object.assign({},S.answers);
+  const q=DATA.questions[i];
+  const narr=q.narr?`<p class="narrator">${q.narr}</p>`:"";
+  const speak=q.speak?`<div class="speak">${q.speak}</div>`:"";
+  const small=(q.kind==="tone"||q.kind==="block")?`<div class="hint" style="margin:0 0 12px">这一问不改变结局，只用来微调你的书单。</div>`:"";
+  const opts=q.options.map(o=>`
+    <button class="opt${S.answers["q"+(i+1)]===o.code?" sel":""}" data-code="${o.code}">
+      <span class="ico">${o.ico}</span>
+      <span class="body"><span class="lb">${o.label}</span>${(o.text && o.text!==o.label)?`<span class="tx">${o.text}</span>`:""}${o.sk?`<span class="sk">${o.sk}</span>`:""}</span>
+    </button>`).join("");
+  stage.innerHTML=`
+    <div class="scene">${q.icon}</div>
+    <div class="act">${q.act}</div>
+    ${narr}${speak}${small}
+    <h1 class="q">${q.title}</h1>
+    <div class="opts">${opts}</div>
+    ${i>0?'<button class="btn ghost prev-btn" id="prevBtn">← 回到上一题</button>':''}
+    ${q.kind==="block"?`<div class="hint">不想回答？选“跳过”直接看结果。</div>`:""}`;
+  stage.querySelectorAll(".opt").forEach(btn=>{
+    btn.onclick=()=>choose(i,btn);
+  });
+  const pb=document.getElementById("prevBtn");
+  if(pb) pb.onclick=()=>{ if(i>0) renderQuestion(i-1); };
+}
+
+function choose(i,btn){
+  if(S.busy) return; S.busy=true;
+  const q=DATA.questions[i];
+  const code=btn.dataset.code;
+  btn.classList.add("sel");
+  stage.querySelectorAll(".opt").forEach(b=>{b.style.pointerEvents="none";if(b!==btn)b.style.opacity=".5";});
+  // 改选判定：本题答案与进入时快照不同 → 清空后续题答案
+  const key=q.kind==="tone"?"tone":(q.kind==="block"?"block":"q"+(i+1));
+  const before=key==="tone"?S.tone:(key==="block"?S.block:S.answers[key]);
+  if(before && before!==code){
+    for(let j=i+1;j<DATA.questions.length;j++){
+      const nq=DATA.questions[j]; const nk=nq.kind==="tone"?"tone":(nq.kind==="block"?"block":"q"+(j+1));
+      if(nk==="tone") S.tone=null; else if(nk==="block") S.block=null; else delete S.answers[nk];
+    }
+  }
+  if(q.kind==="tone") S.tone=code;
+  else if(q.kind==="block") S.block=code;
+  else S.answers["q"+(i+1)]=code;
+
+  const last = i===DATA.questions.length-1;
+  const msg = last
+    ? `<div class="loader"></div>管理员正在从书架上取书……<br><span style="font-size:11px;color:var(--ink3)">${DATA.meta.toResult}</span>`
+    : (i===3 ? "管理员记下了你想写的方向……" : "翻过这一页，往前走……");
+
+  setTimeout(()=>{
+    transTxt.innerHTML=msg;
+    trans.classList.add("on");
+    setTimeout(()=>{
+      trans.classList.remove("on");
+      S.busy=false;
+      if(last) renderEnding();
+      else gotoQuestion(i+1);
+    },2000);
+  },280);
+}
+
+function gotoQuestion(i){ renderQuestion(i); }
+
+function rollNum(el,target,dur){
+  let t0=null;
+  function step(ts){
+    if(t0===null)t0=ts;
+    const p=Math.min(1,(ts-t0)/dur);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(target*e);
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderEnding(){
+  S.screen="ending"; setDots(); replayBtn.classList.add("show");
+  // 结局ID只用第1、3、4题（需求象限/进入方式/执行约束）编码拼接；第2题 tone、第5题 block 不参与
+  const id=[S.answers.q1,S.answers.q3,S.answers.q4].join("-");
+  const end=DATA.endings[id];
+  console.log("[匹配测试] 结局ID:",id,"| toneTag:",S.tone,"| blockTag:",S.block);
+
+  if(!end){
+    stage.innerHTML=`<div class="res-head"><div class="res-tag">未收录</div><h1 class="res-title">这条路暂时没有书目</h1>
+      <p class="guide">你走出了 ${id}，这条路径暂不在 64 条结局里。可点底部「重新走一条路」再试。</p></div>`;
+    return;
+  }
+
+  const booksHtml=end.books.map(b=>{
+    const bk=getBook(b.id)||{name:b.id,pitch:"",emoji:"📕"};
+    const score=calcMatch(b.base,end.genre,S.tone);
+    const isMain=b.role==="主攻";
+    const roleCls=isMain?"main":(b.role==="补短"?"bz":"kz");
+    return `<div class="book${isMain?" main":""}" data-score="${score}">
+      <div class="cover">${bk.emoji||"📕"}</div>
+      <div class="bi"><span class="role ${roleCls}">${b.role}</span>
+        <div class="bname">《${bk.name}》</div>
+        <div class="bmeta">${bk.author&&bk.author!=="待确认"?bk.author:"作者待确认"}${bk.publisher&&bk.publisher!=="待确认"?" · "+bk.publisher:" · 出版社待确认"}</div>
+        <div class="bpitch">${bk.pitch}</div></div>
+      <div class="match"><div class="num">0</div><div class="pct">匹配度</div></div>
+    </div>`;
+  }).join("");
+
+  const recs=buildRecommendations(end,S.tone,S.block);
+  const recHtml=recs.map((r,i)=>`
+    <div class="rec"><div class="rn">${i+1}</div><div class="rb">
+      <div class="rname">《${r.name}》<span class="rrole">${r.roleLabel}</span></div>
+      <div class="rtext">${r.text}</div>
+    </div></div>`).join("");
+
+  stage.innerHTML=`
+    <div class="res-head">
+      <div class="res-tag">${end.path} · ${id}</div>
+      <h1 class="res-title">${end.title}</h1>
+      <div class="guide">${end.guide}</div>
+    </div>
+    <div class="sec-t">今晚该翻开的三本书</div>
+    <div id="books">${booksHtml}</div>
+    <div class="sec-t">还有 ${recs.length} 本相关的，想去看看吗？</div>
+    <div class="rec-list" id="recList">${recHtml}</div>
+    <button class="rec-more" id="recMore" aria-expanded="false"><span class="tri">▼</span><span class="more-tx">展开这 ${recs.length} 本</span></button>
+    <div class="hint" style="margin-top:20px">匹配度：基础分 ± 文体校准（封顶 95 / 保底 80）· 推荐按标签重合与你的卡点动态生成</div>
+    ${feedbackHtml(id)}`;
+
+  // 三本书逐本出现，间隔 1.5 秒，每本数字滚动
+  const bookEls=[...stage.querySelectorAll("#books .book")];
+  bookEls.forEach((el,i)=>{
+    setTimeout(()=>{
+      el.classList.add("in");
+      rollNum(el.querySelector(".num"), parseInt(el.dataset.score), 900);
+    }, i*1500);
+  });
+  setTimeout(()=>{
+    document.getElementById("recList").classList.add("in");
+    document.getElementById("recMore").classList.add("in");
+  }, bookEls.length*1500+400);
+  document.getElementById("recMore").onclick=function(){
+    const list=document.getElementById("recList");
+    const opened=list.classList.toggle("open");
+    this.classList.toggle("open",opened);
+    this.setAttribute("aria-expanded",opened?"true":"false");
+    this.querySelector(".more-tx").textContent=opened?"收起":`展开这 ${recs.length} 本`;
+  };
+
+  initFeedback();
+}
+
+replayBtn.onclick=()=>{
+  S={screen:"intro",qi:0,answers:{},tone:null,block:null,busy:false};START_ANSWERS={};
+  renderIntro();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+
+renderIntro();
+</script>
+</body>
+</html>
