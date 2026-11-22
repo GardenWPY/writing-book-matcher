@@ -172,7 +172,7 @@
     <div class="dots" id="dots"></div>
   </header>
   <main id="stage"></main>
-  <footer class="ft"><button class="replay" id="replay">↺ 重新走一条路</button><a href="index.html" style="display:block;margin-top:12px;color:var(--gold);font-family:inherit;font-size:13px;letter-spacing:.1em;text-decoration:none;opacity:.85">← 返回选择版本</a></footer>
+  <footer class="ft"><button class="replay" id="replay">↺ 重新走一条路</button><a href="index.html" style="display:block;margin-top:12px;color:var(--gold);font-family:inherit;font-size:13px;letter-spacing:.1em;text-decoration:none;opacity:.85">← 返回选择版本</a><div style="margin-top:22px;font-size:11px;color:var(--muted);opacity:.72">写作指路图书馆 · 由 资深扑街阿花 制作</div></footer>
 </div>
 <div class="trans" id="trans"><div class="page">📖</div><div class="tt" id="transTxt"></div></div>
 
@@ -230,6 +230,9 @@ function initFeedback(){
     const score=box.querySelector('input[name="fdbScore"]:checked');
     if(!score){msg.textContent="请先选择 1 到 5 分。";return}
     if(!FEEDBACK_ENDPOINT){msg.textContent="接收端尚未配置，暂不能提交。";return}
+    const rating=Number(score.value);
+    const text=document.getElementById("fdbText").value.trim();
+    const wish=document.getElementById("fdbWant").value.trim();
     const payload={rating:Number(score.value),text:document.getElementById("fdbText").value.trim(),wish:document.getElementById("fdbWant").value.trim(),endingId:endingId,version:version};
     try{
       const res=await fetch(FEEDBACK_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
@@ -261,7 +264,7 @@ const DATA = {
   questions:[
     {
       act:"第一幕 · 你为什么来", icon:"📄",
-      speak:"管理员把四样东西往你面前推了推：“选一个。别贪心，贪心的人走不出这间屋子。”",
+      speak:"管理员把四样东西往你面前推了推：“选一个。别贪心，饭一口一口吃，事一点一点做。”",
       title:"如果今晚只能先解决一件事，你会选哪一样？",
       options:[
         {code:"A",label:"完成作品",text:"我想写完一个故事，或者把手头这个作品推到完稿。",ico:"📄",sk:"意象：一张写了一半的稿纸"},
@@ -743,7 +746,7 @@ const DATA = {
     "C33":{name:"写作是门手艺",family:"通用/体系",level:3,pitch:"中文学术与实用写作之间，少有的可操作桥梁。",bridge:"写作体系",emoji:"✍️",tags:["通用","体系"],author:"刘军强",publisher:"广西师范大学出版社"},
     "C34":{name:"写出来感觉好多了",family:"心理/疗愈",level:1,pitch:"表达性写作先处理情绪，再处理文字。",bridge:"情绪与疗愈",emoji:"🕊️",tags:["心理","疗愈"],author:"詹姆斯·彭内贝克",publisher:"机械工业出版社"},
     "C35":{name:"Dreyer's English",family:"英文/用法",level:3,pitch:"当代英文用法指南，既权威又不端着。",bridge:"英文用法",emoji:"🔤",tags:["英文","用法"],author:"本杰明·德雷尔",publisher:"Random House"},
-    "C36":{name:"网络文学创作原理",family:"网文/类型",level:3,pitch:"网文的快感机制、世界设定与主角设计，一套讲透。",bridge:"网文机制",emoji:"📘",tags:["网文","类型"],author:"王祥",publisher:"中国人民大学出版社"},
+    "C36":{name:"网络文学创作原理",family:"网文/类型",level:3,pitch:"网文的机制、世界设定与主角设计，一套讲透。",bridge:"网文机制",emoji:"📘",tags:["网文","类型"],author:"王祥",publisher:"中国人民大学出版社"},
     "C37":{name:"文案的基本修养",family:"文案/常识",level:2,pitch:"中文文案圈的常识读本，先别急着炫技。",bridge:"文案判断力",emoji:"💬",tags:["文案","常识"],author:"东东枪",publisher:"中信出版集团"},
     "C38":{name:"麦肯锡教我的写作武器",family:"职场/逻辑",level:2,pitch:"商务写作先讲逻辑，再讲措辞。",bridge:"商务逻辑",emoji:"📘",tags:["职场","逻辑"],author:"高杉尚孝",publisher:"广东旅游出版社"},
     "C39":{name:"学术写作十讲",family:"学术/体系",level:3,pitch:"从选题到伦理，学术写作的全流程地图。",bridge:"学术流程",emoji:"🎓",tags:["学术","体系"],author:"卞冬磊",publisher:"北京大学出版社"},
@@ -760,10 +763,10 @@ const DATA = {
     "E10":{name:"写作是门手艺",family:"通用",level:3,pitch:"中文写作的可操作桥梁。",bridge:"框架",emoji:"✍️",tags:["通用","框架","不限"],author:"刘军强",publisher:"待确认",excluded:true},
     "E100":{name:"故事技巧",family:"非虚构",level:3,pitch:"叙事非虚构教程。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"杰克·哈特",publisher:"待确认",excluded:true},
     "E101":{name:"非虚构写作（综合读本）",family:"非虚构",level:3,pitch:"非虚构类型综合。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"张慧瑜",publisher:"待确认"},
-    "E102":{name:"回忆录写作指南",family:"非虚构",level:2,pitch:"回忆录的方法。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"待确认",publisher:"待确认"},
+    "E102":{name:"回忆录写作指南",family:"非虚构",level:2,pitch:"回忆录的方法。",bridge:"框架",emoji:"📰",tags:["非虚构","框架"],author:"余飘、宋清梅",publisher:"待确认"},
     "E103":{name:"人人都应该拥有回忆录",family:"非虚构",level:2,pitch:"回忆录实操。",bridge:"练习",emoji:"📰",tags:["非虚构","练习"],author:"栗刚、刘雪梅",publisher:"待确认"},
     "E104":{name:"你的回忆价值百万",family:"非虚构",level:2,pitch:"主观体验重现。",bridge:"范例",emoji:"📰",tags:["非虚构","范例"],author:"劳拉·卡尔帕金（Laura Kalpakian），韩云旭、江茳 译",publisher:"待确认"},
-    "E105":{name:"记录生活",family:"非虚构",level:1,pitch:"日常写成散文与回忆录。",bridge:"自由书写",emoji:"📰",tags:["非虚构","自由书写"],author:"待确认",publisher:"待确认"},
+    "E105":{name:"生活，写下来吧！：如何写好你的人生故事",family:"非虚构",level:1,pitch:"日常写成散文与回忆录。",bridge:"自由书写",emoji:"📰",tags:["心理","自由书写","轻量"],author:"凯西·伦岑布林克（Cathy Rentzenbrink）",publisher:"待确认"},
     "E106":{name:"文案创作完全手册",family:"文案",level:3,pitch:"文案百科。",bridge:"工具书",emoji:"💬",tags:["文案","工具书","职业文本"],author:"罗伯特·布莱（Robert W. Bly），刘怡女、袁婧 译",publisher:"待确认"},
     "E107":{name:"奥格威谈广告",family:"文案",level:3,pitch:"广告写作的经典。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"大卫·奥格威",publisher:"待确认"},
     "E108":{name:"广告人手记",family:"文案",level:3,pitch:"广告公司经营与创作。",bridge:"范例",emoji:"💬",tags:["文案","范例","职业文本"],author:"叶茂中",publisher:"待确认"},
