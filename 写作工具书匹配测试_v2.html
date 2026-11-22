@@ -154,6 +154,14 @@
   .fdb-btn{width:100%;min-height:46px;margin-top:12px;border:1px solid var(--gold);border-radius:10px;background:var(--gold);color:#1a1408;font-family:inherit;font-size:13.5px;letter-spacing:.1em;cursor:pointer}
   .fdb-btn:disabled{opacity:.45;cursor:not-allowed}
   .fdb-msg{min-height:18px;margin-top:8px;text-align:center;font-size:12px;color:var(--gold)}
+  /* 反馈区折叠：默认收起，与结局折叠同款三角/过渡 */
+  .fdb{padding:0;overflow:hidden}
+  .fdb-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;padding:0 16px;border:none;background:none;color:var(--gold);font-family:inherit;font-size:13.5px;letter-spacing:.08em;cursor:pointer}
+  .fdb-toggle .tri{font-size:12px;color:var(--gold);transition:transform .35s}
+  .fdb-toggle.open .tri{transform:rotate(180deg)}
+  .fdb-panel{max-height:0;overflow:hidden;opacity:0;transition:max-height .5s cubic-bezier(.2,.8,.2,1),opacity .35s}
+  .fdb-panel.open{max-height:1400px;opacity:1}
+  .fdb-inner{padding:2px 16px 18px}
 </style>
 </head>
 <body>
@@ -175,22 +183,43 @@ const FEEDBACK_VERSION = "全量版";
 function feedbackHtml(endingId){
   return `
     <section class="fdb" aria-label="结果反馈">
-      <div class="fdb-title">这次推荐，对你有用吗？</div>
-      <div class="fdb-hint">给这次结果打个分</div>
-      <div class="fdb-stars" role="radiogroup" aria-label="1 到 5 分评分">
-        ${[1,2,3,4,5].map(n=>`<label class="fdb-star"><input type="radio" name="fdbScore" value="${n}" aria-label="${n} 分"><span>${"★".repeat(n)}</span></label>`).join("")}
+      <button type="button" class="fdb-toggle" id="fdbToggle" aria-expanded="false" aria-controls="fdbPanel">
+        <span>评价与建议</span><span class="tri" aria-hidden="true">▼</span>
+      </button>
+      <div class="fdb-panel" id="fdbPanel">
+        <div class="fdb-inner">
+          <div class="fdb-title">这次推荐，对你有用吗？</div>
+          <div class="fdb-hint">给这次结果打个分</div>
+          <div class="fdb-stars" role="radiogroup" aria-label="1 到 5 分评分">
+            ${[1,2,3,4,5].map(n=>`<label class="fdb-star"><input type="radio" name="fdbScore" value="${n}" aria-label="${n} 分"><span>${"★".repeat(n)}</span></label>`).join("")}
+          </div>
+          <textarea class="fdb-textarea" id="fdbText" rows="3" maxlength="500" placeholder="给这次荐书结果的评价（选填）"></textarea>
+          <textarea class="fdb-textarea" id="fdbWant" rows="3" maxlength="120" placeholder="你还希望有什么写作相关小工具？（选填）"></textarea>
+          <button type="button" class="fdb-btn" id="fdbSubmit" disabled>提交反馈</button>
+          <div class="fdb-msg" id="fdbMsg" role="status" aria-live="polite"></div>
+          <input type="hidden" id="fdbEnding" value="${endingId}">
+          <input type="hidden" id="fdbVersion" value="${FEEDBACK_VERSION}">
+        </div>
       </div>
-      <textarea class="fdb-textarea" id="fdbText" rows="3" maxlength="500" placeholder="给这次荐书结果的评价（选填）"></textarea>
-      <textarea class="fdb-textarea" id="fdbWant" rows="3" maxlength="120" placeholder="你还希望有什么写作相关小工具？（选填）"></textarea>
-      <button type="button" class="fdb-btn" id="fdbSubmit" disabled>提交反馈</button>
-      <div class="fdb-msg" id="fdbMsg" role="status" aria-live="polite"></div>
-      <input type="hidden" id="fdbEnding" value="${endingId}">
-      <input type="hidden" id="fdbVersion" value="${FEEDBACK_VERSION}">
     </section>`;
 }
 function initFeedback(){
   const box=document.querySelector(".fdb"); if(!box) return;
+  const toggle=document.getElementById("fdbToggle"), panel=document.getElementById("fdbPanel");
   const btn=document.getElementById("fdbSubmit"), msg=document.getElementById("fdbMsg");
+  const endingId=document.getElementById("fdbEnding").value, version=document.getElementById("fdbVersion").value;
+  const key="fb_submitted_"+endingId+"_"+version;
+  let submitted=false;
+  try{submitted=localStorage.getItem(key)==="1"}catch(e){}
+  toggle.addEventListener("click",()=>{
+    const open=!panel.classList.contains("open");
+    panel.classList.toggle("open",open); toggle.classList.toggle("open",open);
+    toggle.setAttribute("aria-expanded",open?"true":"false");
+  });
+  if(submitted){
+    btn.disabled=true; btn.textContent="您已经提交"; btn.classList.add("done");
+    return;
+  }
   box.querySelectorAll('input[name="fdbScore"]').forEach(r=>r.addEventListener("change",()=>{btn.disabled=false;msg.textContent=""}));
   box.querySelectorAll(".fdb-tag").forEach(t=>t.addEventListener("click",()=>{
     const inp=document.getElementById("fdbWant");
@@ -201,12 +230,14 @@ function initFeedback(){
     const score=box.querySelector('input[name="fdbScore"]:checked');
     if(!score){msg.textContent="请先选择 1 到 5 分。";return}
     if(!FEEDBACK_ENDPOINT){msg.textContent="接收端尚未配置，暂不能提交。";return}
-    const payload={rating:Number(score.value),text:document.getElementById("fdbText").value.trim(),wish:document.getElementById("fdbWant").value.trim(),endingId:document.getElementById("fdbEnding").value,version:document.getElementById("fdbVersion").value};
+    const payload={rating:Number(score.value),text:document.getElementById("fdbText").value.trim(),wish:document.getElementById("fdbWant").value.trim(),endingId:endingId,version:version};
     try{
       const res=await fetch(FEEDBACK_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
       if(!res.ok) throw new Error(String(res.status));
       msg.textContent="收到了，谢谢。";
-    }catch(e){msg.textContent="提交失败，请稍后再试。";}
+      try{localStorage.setItem(key,"1")}catch(e){}
+      btn.disabled=true; btn.textContent="您已经提交"; btn.classList.add("done");
+    }catch(e){msg.textContent="提交失败，请稍后再试。"}
   });
 }
 /* =====================================================================
@@ -1226,7 +1257,7 @@ function renderEnding(){
       <div class="cover">${bk.emoji||"📕"}</div>
       <div class="bi"><span class="role ${roleCls}">${b.role}</span>
         <div class="bname">《${bk.name}》</div>
-        <div class="bmeta">${bk.author&&bk.author!=="待确认"?bk.author:"作者待确认"}${bk.publisher&&bk.publisher!=="待确认"?" · "+bk.publisher:" · 出版社待确认"}</div>
+        ${bk.author&&bk.author!=="待确认"?`<div class="bmeta">${bk.author}</div>`:""}
         <div class="bpitch">${bk.pitch}</div></div>
       <div class="match"><div class="num">0</div><div class="pct">匹配度</div></div>
     </div>`;
