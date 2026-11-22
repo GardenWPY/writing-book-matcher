@@ -550,20 +550,5 @@ renderIntro();
 </script>
 <script data-goatcounter="https://gardenwwwj.goatcounter.com/count"
         async src="./count.js"></script>
-<div id="goatcounter-check" style="position:fixed; bottom:0; left:0; background:yellow; color:black; padding:5px; z-index:9999; font-size:12px;">
-GoatCounter 脚本已执行
-</div>
-<script>
-// 延迟一小会儿检查，确保 count.js 有机会加载
-setTimeout(function() {
-if (window.goatcounter && typeof window.goatcounter.count === 'function') {
-document.getElementById('goatcounter-check').innerText = '✅ GoatCounter 加载成功';
-document.getElementById('goatcounter-check').style.background = 'lightgreen';
-} else {
-document.getElementById('goatcounter-check').innerText = '❌ GoatCounter 脚本未加载或被拦截';
-document.getElementById('goatcounter-check').style.background = 'lightcoral';
-}
-}, 3000); // 3秒后检查
-</script>
 </body>
 </html>
